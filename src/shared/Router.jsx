@@ -4,8 +4,9 @@ import Home from '../pages/Home'
 import MyPage from '../pages/MyPage'
 import CommitDetail from '../pages/CommitDetail'
 import DetailPage from '../pages/DetailPage'
+import Test from '../components/Test'
 
-const Router = () => {
+const Router = ({ posts }) => {
   return (
     <>
     <BrowserRouter>
@@ -14,6 +15,8 @@ const Router = () => {
         <Route path="/mypage/:id" element={<MyPage/>} />
         <Route path="/commitdetail" element={<CommitDetail/>} />
         <Route path="/detailpage" element={<DetailPage/>} />
+        <Route path="/test" element={<Test posts={posts} />} />
+
       </Routes>
     </BrowserRouter>
     </>
