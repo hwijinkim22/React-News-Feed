@@ -5,6 +5,7 @@ const Home = () => {
     <>
     <h1>Feed</h1>
     <h1>MyPage</h1>
+    <button>로그인 버튼</button>
     </>
 
     
