@@ -15,10 +15,8 @@ const App = () => {
   };
 
   async function checkSignIn() {
-    const session = await supabase.auth.getSession();
-    const isSignIn = !!session.data.session;
-
-    setSignIn(isSignIn);
+    const { data: { session } } = await supabase.auth.getSession();
+    setSignIn(!!session);
   }
 
   useEffect(() => {

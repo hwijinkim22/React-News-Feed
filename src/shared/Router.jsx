@@ -14,7 +14,8 @@ const Router = ({ posts, signIn, signOut }) => {
       <Routes>
         <Route path="/" element={<Home/>} />
         <Route path="/mypage/:id" element={signIn ? <MyPage/> : <Navigate to="/login" />} />
-        <Route path="/commitdetail" element={<CommitDetail/> }/>
+        {/* <Route path="/commitdetail" element={signIn ? <CommitDetail/> : <Navigate to="/login" />} /> */}
+        <Route path="/commitdetail" element={<CommitDetail/>} />
         <Route path="/detailpage" element={signIn ? <DetailPage/> : <Navigate to="/login" />} />
         <Route path="/test" element={<Test posts={posts} />} />
         <Route path="/login" element={<LoginPage />} />
