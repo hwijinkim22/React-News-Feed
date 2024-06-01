@@ -61,7 +61,7 @@ const Test = ({ posts }) => {
         <PostCard key={post.id}>
           <h5>글 제목: {post.title}</h5>
           <h5>닉네임: {currentUser?.user_metadata?.name || post.display_name}</h5>
-          <h5>글 내용: {post.content}</h5>
+          <p style={{whiteSpace:"pre-wrap"}}>글 내용: {post.content}</p>
           {currentUser && currentUser.id === post.user_id && (
             <div>
               <Button onClick={() => handleEdit(post)}>수정</Button>
