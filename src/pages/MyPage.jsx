@@ -39,17 +39,28 @@ const Notes = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin: 100px auto;
 `;
 const Note = styled.div`
   display: flex;
   flex-direction: column;
-  width: 250px;
-  height: 250px;
+  width: 15.625rem;
+  height: 15.625rem;
   background-color: #d9d9d9;
+  justify-content: center;
+  align-items: center;
 `;
-const MyPage = () => {
+
+const Content = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  /* margin: 75px auto; */
+`;
+const MyPage = ({ posts }) => {
   // const { myPageId } = useParams;
 
   return (
@@ -67,12 +78,13 @@ const MyPage = () => {
       {/* <List></List> */}
 
       <Notes>
-        <Note />
-        <Note />
-        <Note />
-        <Note />
-        <Note />
-        <Note />
+        {posts.map((post) => {
+          return (
+            <Note key={post.id}>
+              <Content>{post.content}</Content>
+            </Note>
+          );
+        })}
       </Notes>
     </Container>
   );
