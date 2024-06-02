@@ -29,6 +29,14 @@ const Button = styled.button`
   }
 `;
 
+const DeleteButton = styled(Button)`
+  background-color: #dc3545;
+
+  &:hover {
+    background-color: #c82333;
+  }
+`;
+
 const Test = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
@@ -54,13 +62,17 @@ const Test = () => {
   };
 
   const handleDelete = async (postId) => {
-    await supabase
-      .from('posts')
-      .delete()
-      .eq('id', postId);
-    // 페이지를 새로고침하지 않고 데이터를 다시 가져옴
-    const { data: posts } = await supabase.from('posts').select('*');
-    setPosts(posts);
+    const confirmed = window.confirm('정말 삭제하시겠습니까?');
+    if (confirmed) {
+      alert('게시글이 삭제되었습니다.');
+      await supabase
+        .from('posts')
+        .delete()
+        .eq('id', postId);
+      // 페이지를 새로고침하지 않고 데이터를 다시 가져옴
+      const { data: posts } = await supabase.from('posts').select('*');
+      setPosts(posts);
+    }
   };
 
   return (
@@ -77,7 +89,7 @@ const Test = () => {
           {currentUser && currentUser.id === post.user_id && (
             <div>
               <Button onClick={() => handleEdit(post)}>수정</Button>
-              <Button onClick={() => handleDelete(post.id)}>삭제</Button>
+              <DeleteButton onClick={() => handleDelete(post.id)}>삭제</DeleteButton>
             </div>
           )}
         </PostCard>
