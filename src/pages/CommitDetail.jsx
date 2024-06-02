@@ -237,6 +237,21 @@ const CommitDetail = () => {
     }
   };
 
+  const modules = {
+    toolbar: [
+      [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+      [{ size: [] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }, { 'direction': 'rtl' }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      ['link', 'image', 'video'],
+      ['clean']
+    ],
+  };
+
   return (
     <Container>
       <Title>글쓰기</Title>
@@ -251,10 +266,11 @@ const CommitDetail = () => {
         {titleError && <ErrorMessage>{titleError}</ErrorMessage>}
         <EditorContainer>
           <ReactQuill
-            value={content}
-            onChange={setContent}
-            placeholder="내용을 입력해주세요."
-            style={{ height: '400px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
+           value={content}
+           onChange={setContent}
+           placeholder="내용을 입력해주세요."
+           modules={modules}
+           style={{ height: '400px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
           />
         </EditorContainer>
         {contentError && <ErrorMessage>{contentError}</ErrorMessage>}
