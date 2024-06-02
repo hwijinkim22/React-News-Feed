@@ -29,8 +29,9 @@ const Button = styled.button`
   }
 `;
 
-const Test = ({ posts }) => {
+const Test = () => {
   const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
@@ -39,7 +40,13 @@ const Test = ({ posts }) => {
       setCurrentUser(user);
     };
 
+    const fetchPosts = async () => {
+      const { data: posts } = await supabase.from('posts').select('*');
+      setPosts(posts);
+    };
+
     getUser();
+    fetchPosts();
   }, []);
 
   const handleEdit = (post) => {
@@ -51,7 +58,9 @@ const Test = ({ posts }) => {
       .from('posts')
       .delete()
       .eq('id', postId);
-    window.location.reload(); // 페이지 새로고침
+    // 페이지를 새로고침하지 않고 데이터를 다시 가져옴
+    const { data: posts } = await supabase.from('posts').select('*');
+    setPosts(posts);
   };
 
   return (
@@ -63,7 +72,7 @@ const Test = ({ posts }) => {
           <h5>닉네임: {currentUser?.user_metadata?.name || post.display_name}</h5>
           <h5>글 내용</h5>
           <div style={{whiteSpace:"pre-wrap"}}>
-          <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
+            <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
           </div>
           {currentUser && currentUser.id === post.user_id && (
             <div>
