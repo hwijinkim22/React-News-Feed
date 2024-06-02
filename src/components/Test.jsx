@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-jsx';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
 
 const Container = styled.div`
   max-width: 800px;
@@ -37,6 +44,15 @@ const DeleteButton = styled(Button)`
   }
 `;
 
+const ContentContainer = styled.div`
+  white-space: pre-wrap;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+`;
+
 const Test = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
@@ -57,6 +73,10 @@ const Test = () => {
     fetchPosts();
   }, []);
 
+  useEffect(() => {
+    Prism.highlightAll();
+  }, [posts]);
+
   const handleEdit = (post) => {
     navigate('/commitdetail', { state: { post } });
   };
@@ -69,7 +89,6 @@ const Test = () => {
         .from('posts')
         .delete()
         .eq('id', postId);
-      // 페이지를 새로고침하지 않고 데이터를 다시 가져옴
       const { data: posts } = await supabase.from('posts').select('*');
       setPosts(posts);
     }
@@ -83,9 +102,7 @@ const Test = () => {
           <h5>글 제목: {post.title}</h5>
           <h5>닉네임: {currentUser?.user_metadata?.name || post.display_name}</h5>
           <h5>글 내용</h5>
-          <div style={{whiteSpace:"pre-wrap"}}>
-            <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
-          </div>
+          <ContentContainer dangerouslySetInnerHTML={{ __html: post.content }} />
           {currentUser && currentUser.id === post.user_id && (
             <div>
               <Button onClick={() => handleEdit(post)}>수정</Button>
