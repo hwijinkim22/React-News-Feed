@@ -50,6 +50,9 @@ const Note = styled.div`
   background-color: #d9d9d9;
   justify-content: center;
   align-items: center;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Content = styled.div`
@@ -71,7 +74,10 @@ const MyPage = ({ posts }) => {
         <Profile>
           <img src="../../public/iconmonstr-user-circle-thin-48.png" alt="" />
         </Profile>
-        <Profile>LunaBloom</Profile>
+        {posts.map((post) => {
+          return <Profile key={post.id}>{post.nickname}</Profile>;
+        })}
+
         <Profile>✒️</Profile>
       </Profiles>
 
@@ -81,7 +87,7 @@ const MyPage = ({ posts }) => {
         {posts.map((post) => {
           return (
             <Note key={post.id}>
-              <Content>{post.content}</Content>
+              <Content>{post.title}</Content>
             </Note>
           );
         })}
