@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from 'react-router-dom';
 import supabase from "../supabaseClient";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; // Quill 스타일을 import
 
 const Container = styled.div`
   display: flex;
@@ -12,21 +14,30 @@ const Container = styled.div`
   min-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const Button = styled.button`
   padding: 10px 20px;
-  margin-right: 10px;
+  margin: 0 10px;
   color: #fff;
   background-color: #007bff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
   &:hover {
     background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    background-color: #004494;
   }
 `;
 
@@ -43,6 +54,7 @@ const Title = styled.h2`
   color: #333;
   font-size: 32px;
   margin-bottom: 20px;
+  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const Form = styled.form`
@@ -57,20 +69,11 @@ const Input = styled.input`
   padding: 15px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 18px;
   width: 100%;
-`;
-
-const Textarea = styled.textarea`
-  padding: 15px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 18px;
-  width: 100%;
-  height: 200px;
-  resize: vertical;
+  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const ErrorMessage = styled.p`
@@ -80,10 +83,16 @@ const ErrorMessage = styled.p`
   font-size: 14px;
 `;
 
+const EditorContainer = styled.div`
+  width: 100%;
+  margin-bottom: 20px;
+`;
+
 const ButtonGroup = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   width: 100%;
+  margin-top: 20px;
 `;
 
 const CommitDetail = () => {
@@ -140,7 +149,7 @@ const CommitDetail = () => {
       if (window.confirm('정말 등록하시겠습니까?')) {
         const { data, error } = await supabase.from('posts').insert([{ title, content, user_id: user.id }]);
         if (error) {
-          alert(`Error inserting data: ${error.message}`);
+          alert(`데이터 삽입 오류: ${error.message}`);
           navigate('/test');
         } else {
           alert('등록되었습니다');
@@ -168,18 +177,20 @@ const CommitDetail = () => {
           required
         />
         {titleError && <ErrorMessage>{titleError}</ErrorMessage>}
-        <Textarea
-          placeholder="내용을 입력해주세요."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-        />
+        <EditorContainer>
+          <ReactQuill
+            value={content}
+            onChange={setContent}
+            placeholder="내용을 입력해주세요."
+            style={{ height: '400px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
+          />
+        </EditorContainer>
         {contentError && <ErrorMessage>{contentError}</ErrorMessage>}
-        <ButtonGroup>
-          <Button type="submit">등록</Button>
-          <CancelButton type="button" onClick={handleCancel}>취소</CancelButton>
-        </ButtonGroup>
       </Form>
+      <ButtonGroup>
+        <Button onClick={handleSubmit}>등록</Button>
+        <CancelButton onClick={handleCancel}>취소</CancelButton>
+      </ButtonGroup>
     </Container>
   );
 };
