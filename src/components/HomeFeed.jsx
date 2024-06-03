@@ -64,15 +64,15 @@ const HomeFeed = ({ posts }) => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
 
-  const moveDetailPage = () => {
-    navigate('/detailpage');
+  const moveDetailPage = (id) => {
+    navigate(`/detailpage/${id}`);
   };
 
   return (
     <div>
       <HomeContent>
         {posts.slice(0, showAll ? posts.length : 9).map((post) => (
-          <HomePost key={post.id} onClick={moveDetailPage}>
+          <HomePost key={post.id} onClick={() => moveDetailPage(post.id)}>
             <h5>글 제목 : {post.title}</h5>
             <h5>닉네임 : {post.nickname}</h5>
             <HomePostContent>{post.content}</HomePostContent>

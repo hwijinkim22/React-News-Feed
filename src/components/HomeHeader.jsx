@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import homeimage from '../image/homeimage.png';
+import supabase from '../supabaseClient';
 
 const Header = styled.div`
   position: fixed;
