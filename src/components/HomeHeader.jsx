@@ -91,7 +91,7 @@ const HomeHeader = () => {
     <>
       <Header>
         <HomeImage src={homeimage} onClick={moveHome} hide={hideButtons} />
-        <SearchInput type="text" placeholder="내용을 입력하세요!" />
+        <SearchInput type="text" placeholder="제목을 입력하세요!" />
         <HeaderBtns hide={hideButtons}>
           <HeaderBtn>로그인</HeaderBtn>
           <HeaderBtn onClick={moveMyPage}>마이페이지</HeaderBtn>
