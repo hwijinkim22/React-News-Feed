@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-jsx';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
 
 const Container = styled.div`
   max-width: 800px;
@@ -29,8 +36,26 @@ const Button = styled.button`
   }
 `;
 
-const Test = ({ posts }) => {
+const DeleteButton = styled(Button)`
+  background-color: #dc3545;
+
+  &:hover {
+    background-color: #c82333;
+  }
+`;
+
+const ContentContainer = styled.div`
+  white-space: pre-wrap;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+`;
+
+const Test = () => {
   const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
@@ -39,19 +64,43 @@ const Test = ({ posts }) => {
       setCurrentUser(user);
     };
 
+    const fetchPosts = async () => {
+      const { data: posts } = await supabase.from('posts').select('*');
+      setPosts(posts);
+    };
+
     getUser();
+    fetchPosts();
   }, []);
 
+  useEffect(() => {
+    Prism.highlightAll();
+  }, [posts]);
+
   const handleEdit = (post) => {
-    navigate('/commitdetail', { state: { post } });
+    if (currentUser && currentUser.id === post.user_id) {
+      navigate('/commitdetail', { state: { post } });
+    } else {
+      alert('권한이 없습니다.');
+    }
   };
 
   const handleDelete = async (postId) => {
-    await supabase
-      .from('posts')
-      .delete()
-      .eq('id', postId);
-    window.location.reload(); // 페이지 새로고침
+    const post = posts.find(p => p.id === postId);
+    if (currentUser && currentUser.id === post.user_id) {
+      const confirmed = window.confirm('정말 삭제하시겠습니까?');
+      if (confirmed) {
+        alert('게시글이 삭제되었습니다.');
+        await supabase
+          .from('posts')
+          .delete()
+          .eq('id', postId);
+        const { data: posts } = await supabase.from('posts').select('*');
+        setPosts(posts);
+      }
+    } else {
+      alert('권한이 없습니다.');
+    }
   };
 
   return (
@@ -61,11 +110,12 @@ const Test = ({ posts }) => {
         <PostCard key={post.id}>
           <h5>글 제목: {post.title}</h5>
           <h5>닉네임: {currentUser?.user_metadata?.name || post.display_name}</h5>
-          <p style={{whiteSpace:"pre-wrap"}}>글 내용: {post.content}</p>
+          <h5>글 내용</h5>
+          <ContentContainer dangerouslySetInnerHTML={{ __html: post.content }} />
           {currentUser && currentUser.id === post.user_id && (
             <div>
               <Button onClick={() => handleEdit(post)}>수정</Button>
-              <Button onClick={() => handleDelete(post.id)}>삭제</Button>
+              <DeleteButton onClick={() => handleDelete(post.id)}>삭제</DeleteButton>
             </div>
           )}
         </PostCard>
