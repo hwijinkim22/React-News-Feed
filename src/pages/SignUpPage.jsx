@@ -50,9 +50,10 @@ const SignUpPage = () => {
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
 
-  const signUpWithEmail = async () => {
+  const signUpWithEmail = async (e) => {
+    e.preventDefault();
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
