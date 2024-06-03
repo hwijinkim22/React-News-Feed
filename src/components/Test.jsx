@@ -53,10 +53,33 @@ const ContentContainer = styled.div`
   }
 `;
 
+const CommentContainer = styled.div`
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+`;
+
+const CommentForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+`;
+
+const CommentInput = styled.textarea`
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  resize: vertical;
+`;
+
 const Test = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [comments, setComments] = useState({});
 
   useEffect(() => {
     const getUser = async () => {
@@ -67,15 +90,36 @@ const Test = () => {
     const fetchPosts = async () => {
       const { data: posts } = await supabase.from('posts').select('*');
       setPosts(posts);
+      await fetchComments(posts);
     };
 
     getUser();
     fetchPosts();
   }, []);
 
-  useEffect(() => {
-    Prism.highlightAll();
-  }, [posts]);
+  const fetchComments = async (posts) => {
+    const postIds = posts.map(post => post.id);
+    const { data: comments, error } = await supabase
+      .from('comments')
+      .select('*')
+      .in('post_id', postIds);
+
+    if (error) {
+      console.error('Error fetching comments:', error.message);
+      return;
+    }
+
+    if (comments) {
+      const commentsByPost = {};
+      comments.forEach(comment => {
+        if (!commentsByPost[comment.post_id]) {
+          commentsByPost[comment.post_id] = [];
+        }
+        commentsByPost[comment.post_id].push(comment);
+      });
+      setComments(commentsByPost);
+    }
+  };
 
   const handleEdit = (post) => {
     if (currentUser && currentUser.id === post.user_id) {
@@ -103,13 +147,31 @@ const Test = () => {
     }
   };
 
+  const handleCommentSubmit = async (postId, commentContent) => {
+    if (!currentUser) {
+      alert('로그인 후 댓글을 작성할 수 있습니다.');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('comments')
+      .insert([{ post_id: postId, user_id: currentUser.id, content: commentContent }]);
+
+    if (error) {
+      console.error('Error adding comment:', error.message);
+      return;
+    }
+
+    await fetchComments(posts);
+  };
+
   return (
     <Container>
       <h3>데이터 fetch 테스트 페이지입니다.</h3>
       {posts.map((post) => (
         <PostCard key={post.id}>
           <h5>글 제목: {post.title}</h5>
-          <h5>닉네임: {currentUser?.user_metadata?.name || post.display_name}</h5>
+          <h5>닉네임: {currentUser?.user_metadata?.nickname || post.display_name}</h5>
           <h5>글 내용</h5>
           <ContentContainer dangerouslySetInnerHTML={{ __html: post.content }} />
           {currentUser && currentUser.id === post.user_id && (
@@ -118,6 +180,23 @@ const Test = () => {
               <DeleteButton onClick={() => handleDelete(post.id)}>삭제</DeleteButton>
             </div>
           )}
+          <CommentContainer>
+            <h6>댓글</h6>
+            {comments[post.id] && comments[post.id].map(comment => (
+              <div key={comment.id}>
+                <strong>{comment.user_id}</strong>: {comment.content}
+              </div>
+            ))}
+            <CommentForm onSubmit={(e) => {
+              e.preventDefault();
+              const content = e.target.elements.content.value;
+              handleCommentSubmit(post.id, content);
+              e.target.reset();
+            }}>
+              <CommentInput name="content" placeholder="댓글을 작성하세요." />
+              <Button type="submit">댓글 작성</Button>
+            </CommentForm>
+          </CommentContainer>
         </PostCard>
       ))}
     </Container>
