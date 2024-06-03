@@ -11,7 +11,3 @@ const Home = ({ posts }) => {
 };
 
 export default Home;
-  );
-};
-
-export default Home;

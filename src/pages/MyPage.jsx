@@ -1,8 +1,75 @@
-import React from 'react';
-import supabase from '../supabaseClient';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import HomeHeader from '../components/HomeHeader';
+import React, { useState, useEffect } from 'react';
+import supabase from '../supabaseClient';
 
+const Container = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  display: flex;
+  flex-direction: column;
+`;
+
+const MyPageDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 23px;
+  border-bottom: 1px solid gray;
+  padding: 10px;
+`;
+
+const Profiles = styled.div`
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Profile = styled.span`
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Avatar = styled.img`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+const Notes = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+  margin: 100px auto;
+`;
+const Note = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 15.625rem;
+  height: 15.625rem;
+  background-color: #d9d9d9;
+  justify-content: center;
+  align-items: center;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const Content = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  /* margin: 75px auto; */
+`;
 const MyPage = () => {
   const [postList, setPostList] = useState([]);
   const [user, setUser] = useState(null);
