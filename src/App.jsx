@@ -37,16 +37,11 @@ const App = () => {
     };
   }, []);
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    setSignIn(false);
-  }
-
   return (
     <>
       <GlobalStyles />
       <FetchData onDataFetch={handleDataFetch} />
-      <Router posts={posts} signIn={signIn} signOut={signOut} />
+      <Router posts={posts} />
     </>
   );
 };
