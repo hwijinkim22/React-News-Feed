@@ -1,7 +1,12 @@
 import React from 'react';
+import HomeHeader from '../components/HomeHeader';
 
 const MyPage = () => {
-  return <div>MyPage</div>;
+  return (
+    <>
+      <HomeHeader />
+    </>
+  );
 };
 
 export default MyPage;
