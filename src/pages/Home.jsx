@@ -54,8 +54,12 @@ const Home = () => {
 
   const checkZoom = () => {
     const zoomLevel = Math.round((window.outerWidth / window.innerWidth) * 100);
+    //이 비율에 100을 곱하고 소수점을 반올림하여 줌 레벨을 백분율로 계산, 줌 레벨이 150%라면 이 값은 150이 됨
     setHideButtons(zoomLevel >= 150);
   };
+
+  // window.outerWidth 브라우저 창의 외부 너비를 픽셀 단위로 반환. 브라우저 창의 전체 너비(스크롤바와 도구 모음 포함)
+  // window.innerWidth 브라우저 창의 내부 너비를 픽셀 단위로 반환. 이는 스크롤바를 제외한 창의 콘텐츠 영역의 너비
 
   useEffect(() => {
     window.addEventListener('resize', checkZoom);
