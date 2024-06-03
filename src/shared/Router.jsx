@@ -20,7 +20,6 @@ const Router = ({ posts, signIn, signOut }) => {
         <Route path="/test" element={<Test posts={posts} />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        {/* <Route path="/mypage" element={<MyPage />} /> */}
       </Routes>
       {signIn && <button onClick={signOut}>로그아웃</button>}
     </BrowserRouter>
