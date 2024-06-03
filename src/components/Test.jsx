@@ -2,13 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
-import Prism from 'prismjs';
-import 'prismjs/themes/prism.css';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-css';
-import 'prismjs/components/prism-jsx';
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
-import 'prismjs/plugins/line-numbers/prism-line-numbers';
 
 const Container = styled.div`
   max-width: 800px;
@@ -154,7 +147,7 @@ const Test = () => {
 
     const { error } = await supabase
       .from('comments')
-      .insert([{ post_id: postId, user_id: currentUser.id, content: commentContent }]);
+      .insert([{ post_id: postId, user_id: currentUser.id, comment: commentContent }]);
 
     if (error) {
       console.error('Error adding comment:', error.message);
@@ -183,16 +176,16 @@ const Test = () => {
             <h6>댓글</h6>
             {comments[post.id] && comments[post.id].map(comment => (
               <div key={comment.id}>
-                <strong>{comment.user_id}</strong>: {comment.content}
+                <strong>{comment.user_id}</strong>: {comment.comment}
               </div>
             ))}
             <CommentForm onSubmit={(e) => {
               e.preventDefault();
-              const content = e.target.elements.content.value;
-              handleCommentSubmit(post.id, content);
+              const comment = e.target.elements.comment.value;
+              handleCommentSubmit(post.id, comment);
               e.target.reset();
             }}>
-              <CommentInput name="content" placeholder="댓글을 작성하세요." />
+              <CommentInput name="comment" placeholder="댓글을 작성하세요." />
               <Button type="submit">댓글 작성</Button>
             </CommentForm>
           </CommentContainer>
@@ -201,4 +194,5 @@ const Test = () => {
     </Container>
   );
 };
+
 export default Test;
