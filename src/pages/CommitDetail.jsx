@@ -1,9 +1,6 @@
-// 지금은 협업 초기로 비교적 자세하게 주석을 달았습니다.
-// merge하는 과정에서는 필요한 주석만 남기고 제거하겠습니다. - 김병준 -
-
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import supabase from "../supabaseClient";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Quill 스타일 import (글쓰기 에디터)
@@ -13,30 +10,28 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-width: 1200px;
-  min-width: 800px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f5f5f5;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
 const Button = styled.button`
   padding: 10px 20px;
   margin: 0 10px;
-  color: #fff;
+  color: #ffffff;
   background-color: #007bff;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &:hover {
     background-color: #0056b3;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
 
   &:active {
@@ -45,65 +40,71 @@ const Button = styled.button`
 `;
 
 const CancelButton = styled(Button)`
-  background-color: #343434;
+  background-color: #6c757d;
 
   &:hover {
-    background-color: #1f1f1f;
+    background-color: #5a6268;
   }
 `;
 
 const Title = styled.h2`
   text-align: center;
   color: #333;
-  font-size: 32px;
+  font-size: 28px;
   margin-bottom: 20px;
-  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
 `;
 
 const Input = styled.input`
-  padding: 15px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 18px;
-  width: 100%;
-  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+padding: 12px 16px;
+margin-bottom: 10px;
+border: 1px solid #ddd;
+border-radius: 4px;
+font-size: 16px;
+width: 800px;
+max-width: 100%;
+font-family: 'Helvetica Neue', Arial, sans-serif;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+&:focus {
+  outline: none;
+  border-color: #007bff;
+}
 `;
 
 const ErrorMessage = styled.p`
-  color: red;
+  color: #dc3545;
   margin-top: -10px;
   margin-bottom: 10px;
   font-size: 14px;
 `;
 
+// quill editor CSS
 const EditorContainer = styled.div`
   width: 100%;
   margin-bottom: 20px;
 
   .ql-container {
-    height: 400px;
-    overflow-y: auto;
-    border: none;
+    height: 600px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
   .ql-editor {
     height: 100%;
-    border: 1px solid #ccc;
-    border-radius: 8px;
   }
 
   .ql-toolbar {
-    border: none;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
   }
 `;
 
@@ -114,11 +115,13 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
 `;
 
-
 const CommitDetail = () => {
-  const navigate = useNavigate(); // 홈으로~ 넘기기 위한 훅
-  const [title, setTitle] = useState(''); // 글 제목(title)을 상태로 관리
-  const [content, setContent] = useState(''); // 글 내용(content)을 상태로 관리
+  const navigate = useNavigate(); // 홈으로 넘기기 위한 훅
+  const location = useLocation(); // test 컴포넌트에서 글 내용을 넘겨받기 위한 훅(edit 함수에서)
+  const post = location.state?.post || {};
+
+  const [title, setTitle] = useState(post.title || ''); // 글 제목(title)을 상태로 관리(test에서 넘겨받은 값)
+  const [content, setContent] = useState(post.content || ''); // 글 내용(content)을 상태로 관리(test에서 넘겨받은 값)
   const [titleError, setTitleError] = useState(''); // 제목 에러 메시지 띄우기 위해 상태로 관리
   const [contentError, setContentError] = useState(''); // 내용 에러 메시지 띄우기 위해 상태로 관리
   const [user, setUser] = useState(null); // 사용자 정보 상태 변수와 상태 변경 함수 지정
@@ -187,12 +190,23 @@ const CommitDetail = () => {
     // supabase posts 테이블을 참조(from)해서 데이터를 하나의 객체로 채워 넣습니다.(insert)
     if (valid && user) {
       if (window.confirm('정말 등록하시겠습니까?')) {
-        // data는 나중에 사용할 수 있어서 일단 둡니다.
-        const { data, error } = await supabase.from('posts').insert([{ title, content, user_id: user.id }]);
+        let result;
+        if (post.id) {
+          result = await supabase
+            .from('posts')
+            .update({ title, content })
+            .eq('id', post.id);
+        } else {
+          result = await supabase
+            .from('posts')
+            .insert([{ title, content, user_id: user.id }]);
+        }
+
+        const { error } = result;
+
         if (error) {
           const errorMessage = translateErrorMessage(error.message, error.code);
           alert(`데이터 삽입 오류: ${errorMessage}`);
-          navigate('/test');
         } else {
           alert('등록되었습니다');
           navigate('/test');
@@ -270,7 +284,7 @@ const CommitDetail = () => {
            onChange={setContent}
            placeholder="내용을 입력해주세요."
            modules={modules}
-           style={{ height: '400px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
+           style={{ height: '700px' }}
           />
         </EditorContainer>
         {contentError && <ErrorMessage>{contentError}</ErrorMessage>}
@@ -284,8 +298,3 @@ const CommitDetail = () => {
 };
 
 export default CommitDetail;
-
-
-// 참고
-// CommitDetail 페이지에서 발생하는 findDOMNode에러는 quill 에디터에서
-// 발생시키는 에러로 해결책이 없는 듯하니 무시해도 되는 것 같습니다.
