@@ -1,5 +1,7 @@
 // import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import supabase from '../supabaseClient';
 
 const Container = styled.div`
   max-width: 800px;
@@ -20,21 +22,26 @@ const MyPageDiv = styled.div`
 `;
 
 const Profiles = styled.div`
+  font-size: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
-  margin-top: 50px;
 `;
 
 const Profile = styled.span`
   padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
-// const List = styled.div`
-//   border-bottom: 1px solid gray;
-//   margin: 100px;
-// `;
+const Avatar = styled.img`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
 const Notes = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -63,28 +70,44 @@ const Content = styled.div`
   padding: 20px;
   /* margin: 75px auto; */
 `;
-const MyPage = ({ posts }) => {
-  // const { myPageId } = useParams;
+const MyPage = () => {
+  const [postList, setPostList] = useState([]);
+  const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+      if (user) {
+        setUser(user);
+        const { data: posts, error } = await supabase.from('posts').select('id, title').eq('user_id', user.id);
+        if (error) {
+          console.error('Error fetching posts', error);
+        } else {
+          setPostList(posts);
+        }
+      }
+    };
+    fetchPosts();
+  }, []);
+  const nicknameChange = () => {
+    alert('hi');
+  };
   return (
     <Container>
       <MyPageDiv>마이 페이지</MyPageDiv>
 
       <Profiles>
         <Profile>
-          <img src="../../public/iconmonstr-user-circle-thin-48.png" alt="" />
+          <Avatar src={user?.user_metadata?.avatar_url || ''} alt="User Avatar" />
         </Profile>
-        {posts.map((post) => {
-          return <Profile key={post.id}>{post.nickname}</Profile>;
-        })}
-
-        <Profile>✒️</Profile>
+        <Profile>{user?.user_metadata?.nickname || user?.email}</Profile>
+        <Profile onClick={nicknameChange}>✒️</Profile>
       </Profiles>
 
-      {/* <List></List> */}
-
       <Notes>
-        {posts.map((post) => {
+        {postList.map((post) => {
           return (
             <Note key={post.id}>
               <Content>{post.title}</Content>
