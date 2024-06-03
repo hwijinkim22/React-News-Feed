@@ -60,7 +60,9 @@ const Test = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
       setCurrentUser(user);
     };
 
@@ -86,15 +88,12 @@ const Test = () => {
   };
 
   const handleDelete = async (postId) => {
-    const post = posts.find(p => p.id === postId);
+    const post = posts.find((p) => p.id === postId);
     if (currentUser && currentUser.id === post.user_id) {
       const confirmed = window.confirm('정말 삭제하시겠습니까?');
       if (confirmed) {
         alert('게시글이 삭제되었습니다.');
-        await supabase
-          .from('posts')
-          .delete()
-          .eq('id', postId);
+        await supabase.from('posts').delete().eq('id', postId);
         const { data: posts } = await supabase.from('posts').select('*');
         setPosts(posts);
       }
@@ -123,5 +122,4 @@ const Test = () => {
     </Container>
   );
 };
-
 export default Test;
