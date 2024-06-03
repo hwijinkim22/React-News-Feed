@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import homeimage from '../image/homeimage.png';
-import supabase from '../supabaseClient';
 
 const Header = styled.div`
   position: fixed;
@@ -92,7 +91,7 @@ const HomeHeader = () => {
     <>
       <Header>
         <HomeImage src={homeimage} onClick={moveHome} hide={hideButtons} />
-        <SearchInput type="text" placeholder="제목을 입력하세요!" />
+        <p style={{ color: 'blue' }}>Our Knowledge</p>
         <HeaderBtns hide={hideButtons}>
           <HeaderBtn>로그인</HeaderBtn>
           <HeaderBtn onClick={moveMyPage}>마이페이지</HeaderBtn>
