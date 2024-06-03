@@ -1,14 +1,15 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
     <>
-    <h1>Feed</h1>
-    <h1>MyPage</h1>
+      <h1>Feed</h1>
+      <Link to="/mypage">
+        <h1>MyPage</h1>
+      </Link>
     </>
+  );
+};
 
-    
-  )
-}
-
-export default Home
+export default Home;

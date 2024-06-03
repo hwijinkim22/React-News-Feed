@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient("https://nozekgjgeindgyulfapu.supabase.co", "YOUR_SUPABASE_KEY");
+const supabase = createClient('https://nozekgjgeindgyulfapu.supabase.co', 'YOUR_SUPABASE_KEY');
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const SignUpPage = () => {
     setIsSubmitting(true);
 
     await supabase.auth.signInWithOAuth({
-      provider: 'github',
+      provider: 'github'
     });
 
     setIsSubmitting(false);
@@ -25,7 +25,9 @@ const SignUpPage = () => {
       <h2>회원가입 페이지</h2>
       <form id="signUpForm" onSubmit={handleSignUp}>
         <input type="file" onChange={(e) => setAvatarFile(e.target.files[0])} />
-        <button type="submit" disabled={isSubmitting}>GitHub로 회원가입</button>
+        <button type="submit" disabled={isSubmitting}>
+          GitHub로 회원가입
+        </button>
       </form>
       <button onClick={() => navigate('/login')}>로그인</button>
     </div>
