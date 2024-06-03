@@ -75,7 +75,13 @@ const SignUpPage = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    signUpWithEmail();
+    setIsSubmitting(true);
+
+    await supabase.auth.signInWithOAuth({
+      provider: 'github'
+    });
+
+    setIsSubmitting(false);
   };
 
   return (

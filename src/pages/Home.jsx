@@ -1,21 +1,13 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import HomeFeed from '../components/HomeFeed';
+import HomeHeader from '../components/HomeHeader';
 
-const Home = () => {
-  const navigate = useNavigate();
-
-  const handleLoginPage = () => {
-    navigate('/login')
-  }
+const Home = ({ posts }) => {
   return (
     <>
-    <h1>Feed</h1>
-    <h1>MyPage</h1>
-    <button onClick={handleLoginPage}>로그인 버튼</button>
+      <HomeHeader />
+      <HomeFeed posts={posts} />
     </>
+  );
+};
 
-    
-  )
-}
-
-export default Home
+export default Home;
