@@ -14,9 +14,9 @@ const Router = ({ posts, signIn, setSignIn, signOut }) => {
     <BrowserRouter>
     <HomeHeader signIn={signIn} signOut={signOut}/>
       <Routes>
-        <Route path="/" element={<Home posts={posts} signIn={signIn} setSignIn={setSignIn} signOut={signOut}/>} />
+        <Route path="/" element={<Home posts={posts}/>} />
         <Route path="/mypage" element={signIn ? <MyPage/> : <Navigate to="/login" />} />
-        <Route path="/commitdetail" element={signIn ? <CommitDetail/> : <Navigate to="/login"/>}  />
+        <Route path="/commitdetail" element={signIn ? <CommitDetail/> : <Navigate to="/login" />} />
         <Route path="/detailpage" element={signIn ? <DetailPage/> : <Navigate to="/login" />} />
         <Route path="/test" element={<Test posts={posts} />} />
         <Route path="/login" element={<LoginPage signIn={signIn} setSignIn={setSignIn} signOut={signOut}/>} />
