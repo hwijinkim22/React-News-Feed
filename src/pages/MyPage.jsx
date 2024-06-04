@@ -1,14 +1,16 @@
-// import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
 import Modal from '../components/Modal';
-import ImgUpload from '../components/ImgUpload';
+// import ImgUpload from '../components/ImgUpload';
+import HomeHeader from '../components/HomeHeader';
 
 const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
+  padding-top: 60px;
 
   display: flex;
   flex-direction: column;

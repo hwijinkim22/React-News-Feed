@@ -1,13 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import HomeFeed from '../components/HomeFeed';
+import HomeHeader from '../components/HomeHeader';
 
-const Home = () => {
+const Home = ({ posts }) => {
   return (
     <>
-      <h1>Feed</h1>
-      <Link to="/mypage">
-        <h1>MyPage</h1>
-      </Link>
+      <HomeHeader />
+      <HomeFeed posts={posts} />
     </>
   );
 };
