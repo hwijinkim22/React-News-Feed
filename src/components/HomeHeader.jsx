@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import homeimage from '../image/homeimage.png';
+import CommitDetail from '../pages/CommitDetail';
 
 const Header = styled.div`
   position: fixed;
@@ -48,7 +49,7 @@ const HomeImage = styled.img`
   display: ${(props) => (props.hide === 'true' ? 'none' : 'flex')};
 `;
 
-const HomeHeader = () => {
+const HomeHeader = ({ signIn, signOut }) => {
   const [hideButtons, setHideButtons] = useState(false);
 
   const checkZoom = () => {
@@ -83,13 +84,26 @@ const HomeHeader = () => {
     navigate('/login');
   };
 
+  const moveCommitDetail = () => {
+    console.log('Before signIn=', signIn);
+    navigate('/commitdetail');
+    console.log('After signIn=', signIn);
+  };
+
   return (
     <>
       <Header>
         <HomeImage src={homeimage} onClick={moveHome} hide={hideButtons ? 'true' : 'false'} />
         <p style={{ color: 'blue' }}>Our Knowledge</p>
         <HeaderBtns hide={hideButtons ? 'true' : 'false'}>
-          <HeaderBtn onClick={moveLogin}>로그인</HeaderBtn>
+          {signIn ? (
+            <>
+              <HeaderBtn onClick={signOut}>로그아웃</HeaderBtn>
+              <HeaderBtn onClick={moveCommitDetail}>글쓰기</HeaderBtn>
+            </>
+          ) : (
+            <HeaderBtn onClick={moveLogin}>로그인</HeaderBtn>
+          )}
           <HeaderBtn onClick={moveMyPage}>마이페이지</HeaderBtn>
         </HeaderBtns>
       </Header>
