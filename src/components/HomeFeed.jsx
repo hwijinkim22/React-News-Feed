@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import inputimage from '../image/inputimage.png';
 import HomeInput from './HomeInput';
 
 const Container = styled.div`
@@ -109,6 +108,8 @@ const HomeFeed = ({ posts }) => {
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
 
+  console.log(posts);
+
   const moveDetailPage = (id) => {
     navigate(`/detailpage/${id}`);
   };
@@ -121,12 +122,6 @@ const HomeFeed = ({ posts }) => {
     (post) =>
       post.title.toString().includes(searchFeed) || post.content.toLowerCase().includes(searchFeed.toLowerCase())
   );
-
-  const stripHtmlTags = (str) => {
-    const div = document.createElement('div');
-    div.innerHTML = str;
-    return div.textContent || div.innerText || '';
-  };
 
   return (
     <Container>

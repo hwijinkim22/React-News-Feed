@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
 import Modal from '../components/Modal';
 // import ImgUpload from '../components/ImgUpload';
-import HomeHeader from '../components/HomeHeader';
 
 const Container = styled.div`
   max-width: 800px;
