@@ -25,8 +25,8 @@ const HomeContent = styled.div`
 const HomePost = styled.div`
   position: relative;
   margin-top: 10px;
-  width: 600px;
-  height: 600px;
+  width: 500px;
+  height: 500px;
   margin: 10px;
   border: 2px solid black;
   border-radius: 10px;
@@ -110,16 +110,26 @@ const CloseButton = styled.button`
 const HomeFeed = ({ posts }) => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
+  const [searchFeed, setSearchFeed] = useState('');
 
   const moveDetailPage = (id) => {
     navigate(`/detailpage/${id}`);
   };
 
+  const handleSearch = (feed) => {
+    setSearchFeed(feed);
+  };
+
+  const filterdPosts = posts.filter(
+    (post) =>
+      post.title.toString().includes(searchFeed) || post.content.toLowerCase().includes(searchFeed.toLowerCase())
+  );
+
   return (
     <Container>
-      <HomeInput />
+      <HomeInput onSearch={handleSearch} />
       <HomeContent>
-        {posts.slice(0, showAll ? posts.length : 9).map((post) => (
+        {filterdPosts.slice(0, showAll ? filterdPosts.length : 9).map((post) => (
           <HomePost key={post.id} onClick={() => moveDetailPage(post.id)}>
             <HomePostImage src={post.image} />
             <HomePostOverlay>

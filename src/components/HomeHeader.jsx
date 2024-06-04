@@ -8,7 +8,7 @@ const Header = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
+  height: 50px;
   background-color: #343434;
   box-shadow: 0 4px 2px -2px gray;
   display: flex;
@@ -21,7 +21,7 @@ const Header = styled.div`
 const HeaderBtns = styled.div`
   position: absolute;
   right: 20px;
-  display: ${(props) => (props.hide ? 'none' : 'flex')};
+  display: ${(props) => (props.hide === 'true' ? 'none' : 'flex')};
 `;
 
 const HeaderBtn = styled.button`
@@ -39,21 +39,13 @@ const HeaderBtn = styled.button`
   }
 `;
 
-const SearchInput = styled.input`
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 300px;
-`;
-
 const HomeImage = styled.img`
   position: absolute;
   left: 20px;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  display: ${(props) => (props.hide ? 'none' : 'flex')};
+  display: ${(props) => (props.hide === 'true' ? 'none' : 'flex')};
 `;
 
 const HomeHeader = () => {
@@ -90,9 +82,9 @@ const HomeHeader = () => {
   return (
     <>
       <Header>
-        <HomeImage src={homeimage} onClick={moveHome} hide={hideButtons} />
+        <HomeImage src={homeimage} onClick={moveHome} hide={hideButtons ? 'true' : 'false'} />
         <p style={{ color: 'blue' }}>Our Knowledge</p>
-        <HeaderBtns hide={hideButtons}>
+        <HeaderBtns hide={hideButtons ? 'true' : 'false'}>
           <HeaderBtn>로그인</HeaderBtn>
           <HeaderBtn onClick={moveMyPage}>마이페이지</HeaderBtn>
         </HeaderBtns>

@@ -19,17 +19,28 @@ const InputImage = styled.img`
   margin-bottom: 20px;
 `;
 
-const HomeInput = () => {
+const HomeInput = ({ onSearch }) => {
   const [showInput, setShowInput] = useState(false);
+  const [searchFeed, setSearchFeed] = useState('');
 
   const toggleInput = () => {
     setShowInput(!showInput);
   };
 
+  const handleSearch = (e) => {
+    setSearchFeed(e.target.value);
+    onSearch(e.target.value);
+  };
+
   return (
     <>
       <InputImage src={inputimage} onClick={toggleInput} />
-      <SearchInput show={showInput} placeholder="검색어를 입력하세요!" />
+      <SearchInput
+        show={showInput ? 'true' : undefined}
+        placeholder="검색어를 입력하세요!"
+        value={searchFeed}
+        onChange={handleSearch}
+      />
     </>
   );
 };
