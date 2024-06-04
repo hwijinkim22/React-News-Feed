@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
-import HomeHeader from '../components/HomeHeader';
 
 const Container = styled.div`
   max-width: 800px;
@@ -98,7 +97,6 @@ const MyPage = () => {
   };
   return (
     <>
-      <HomeHeader />
       <Container>
         <MyPageDiv>마이 페이지</MyPageDiv>
 
