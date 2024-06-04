@@ -89,7 +89,7 @@ const HomeHeader = () => {
         <HomeImage src={homeimage} onClick={moveHome} hide={hideButtons ? 'true' : 'false'} />
         <p style={{ color: 'blue' }}>Our Knowledge</p>
         <HeaderBtns hide={hideButtons ? 'true' : 'false'}>
-          <HeaderBtn>로그인</HeaderBtn>
+          <HeaderBtn onClick={moveLogin}>로그인</HeaderBtn>
           <HeaderBtn onClick={moveMyPage}>마이페이지</HeaderBtn>
         </HeaderBtns>
       </Header>

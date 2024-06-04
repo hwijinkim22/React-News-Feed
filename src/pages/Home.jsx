@@ -4,7 +4,6 @@ import HomeHeader from '../components/HomeHeader';
 const Home = ({ posts }) => {
   return (
     <>
-      <HomeHeader />
       <HomeFeed posts={posts} />
     </>
   );

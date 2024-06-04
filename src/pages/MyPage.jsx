@@ -98,7 +98,6 @@ const MyPage = () => {
   };
   return (
     <>
-      <HomeHeader />
       <Container>
         <MyPageDiv>마이 페이지</MyPageDiv>
 

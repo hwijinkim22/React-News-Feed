@@ -58,7 +58,7 @@ const HomePostOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100px;
-  background: rgba(0, 0, 0, 0.5);
+  background: #343434;
   color: white;
   padding: 10px;
   box-sizing: border-box;
@@ -69,7 +69,9 @@ const HomePostOverlay = styled.div`
 const HomePostTitle = styled.h5`
   margin: 0;
   font-size: 20px;
-  color: black;
+  color: white;
+  display: flex;
+  justify-content: center;
 `;
 
 const HomePostNickname = styled.h5`
@@ -80,11 +82,6 @@ const HomePostNickname = styled.h5`
 const HomePostContent = styled.p`
   margin: 5px 0 0;
   font-size: 16px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const MoreButton = styled.button`
@@ -125,17 +122,23 @@ const HomeFeed = ({ posts }) => {
       post.title.toString().includes(searchFeed) || post.content.toLowerCase().includes(searchFeed.toLowerCase())
   );
 
+  const stripHtmlTags = (str) => {
+    const div = document.createElement('div');
+    div.innerHTML = str;
+    return div.textContent || div.innerText || '';
+  };
+
   return (
     <Container>
       <HomeInput onSearch={handleSearch} />
       <HomeContent>
-        {filterdPosts.slice(0, showAll ? filterdPosts.length : 9).map((post) => (
+        {filterdPosts.slice(0, showAll ? filterdPosts.length : 10).map((post) => (
           <HomePost key={post.id} onClick={() => moveDetailPage(post.id)}>
-            <HomePostImage src={post.image} />
+            <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
             <HomePostOverlay>
               <HomePostTitle>{post.title}</HomePostTitle>
               <HomePostNickname>{post.nickname}</HomePostNickname>
-              <HomePostContent>{post.content}</HomePostContent>
+              <HomePostContent></HomePostContent>
             </HomePostOverlay>
           </HomePost>
         ))}
