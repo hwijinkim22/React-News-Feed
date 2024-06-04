@@ -104,19 +104,6 @@ const LoginPage = ({ signIn, setSignIn, signOut }) => {
     }
   }
 
-  // const signOut = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const { error } = await supabase.auth.signOut();
-  //     if (error) {
-  //       throw error;
-  //     }
-  //     setSignIn(false);
-  //   } catch (error) {
-  //     console.error('로그아웃 오류 발생', error.message);
-  //   }
-  // };
-
   console.log(signIn);
   return (
     <Container>
