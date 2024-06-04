@@ -211,6 +211,7 @@ const CommitDetail = () => {
         } else {
           alert('등록되었습니다');
           navigate('/');
+          window.location.reload();
         }
       }
     }
