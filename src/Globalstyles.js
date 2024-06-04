@@ -8,6 +8,10 @@ const GlobalStyles = createGlobalStyle`
     font-style: normal;
   }
 
+  * {
+    user-select: none;
+  }
+  
   body {
     max-width: 1280px;
     width: 100%;
@@ -17,4 +21,3 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 export default GlobalStyles;
-
