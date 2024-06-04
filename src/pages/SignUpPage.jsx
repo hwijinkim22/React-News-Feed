@@ -52,10 +52,12 @@ const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const signUpWithEmail = async (e) => {
     e.preventDefault();
     try {
+      setIsSubmitting(true);
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -72,25 +74,35 @@ const SignUpPage = () => {
 
       navigate('/login');
     } catch (error) {
-      console.error('회원가입 중 오류 발생:', error.message);
+      console.error('회원가입 오류 발생', error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleSignUp = async () => {
+    try {
+      setIsSubmitting(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github'
+      });
 
-    await supabase.auth.signInWithOAuth({
-      provider: 'github'
-    });
+      if (error) {
+        throw error;
+      }
 
-    setIsSubmitting(false);
+      navigate('/');
+    } catch (error) {
+      console.error('GitHub 로그인 중 오류 발생:', error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <Container>
       <Title>회원가입 페이지</Title>
-      <Form onSubmit={handleSignUp}>
+      <Form onSubmit={signUpWithEmail}>
         <Input
           type="email"
           name="email"
@@ -115,8 +127,13 @@ const SignUpPage = () => {
           onChange={(e) => setNickname(e.target.value)}
           required
         />
-        <Button type="submit">회원가입</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? '가입 중...' : '회원가입'}
+        </Button>
       </Form>
+      <Button onClick={handleSignUp} disabled={isSubmitting}>
+        {isSubmitting ? '로딩 중...' : 'GitHub로 회원가입'}
+      </Button>
       <Button onClick={() => navigate('/login')}>로그인</Button>
     </Container>
   );

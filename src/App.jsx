@@ -17,6 +17,12 @@ const App = () => {
     setPosts(data);
   };
 
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    setSignIn(false);
+  }
+
   async function checkSignIn() {
     const {
       data: { session }
@@ -46,7 +52,7 @@ const App = () => {
     <>
       <GlobalStyles />
       <FetchData onDataFetch={handleDataFetch} />
-      <Router posts={posts} />
+      <Router posts={posts} signIn={signIn} setSignIn={setSignIn} signOut={signOut}/>
     </>
   );
 };
