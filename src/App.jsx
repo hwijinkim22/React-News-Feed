@@ -2,20 +2,21 @@ import { useEffect, useState } from 'react';
 import GlobalStyles from './Globalstyles';
 import FetchData from './components/FetchData';
 import Router from './shared/Router';
-import supabase from './supabaseClient';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  'https://nozekgjgeindgyulfapu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vemVrZ2pnZWluZGd5dWxmYXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTcxNDI1MDEsImV4cCI6MjAzMjcxODUwMX0.Wu1dt8WSMSro-_ieydr-ghmfcKPr568Ovm6dfzgrB00'
+);
 
 const App = () => {
   const [posts, setPosts] = useState([]);
-  const [comments, setComments] = useState([]);
   const [signIn, setSignIn] = useState(false);
 
-  const handlePostsFetch = (data) => {
+  const handleDataFetch = (data) => {
     setPosts(data);
   };
 
-  const handleCommentsFetch = (data) => {
-    setComments(data);
-  };
 
   const signOut = async (e) => {
     e.preventDefault();
@@ -38,6 +39,12 @@ const App = () => {
   }
 
   useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await supabase.from('posts').select();
+      setPosts(data);
+    };
+
+    fetchData();
     checkSignIn();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(() => {
@@ -52,8 +59,8 @@ const App = () => {
   return (
     <>
       <GlobalStyles />
-      <FetchData onPostsFetch={handlePostsFetch} onCommentsFetch={handleCommentsFetch} />
-      <Router posts={posts} comments={comments} signIn={signIn} setSignIn={setSignIn} signOut={signOut} />
+      <FetchData onDataFetch={handleDataFetch} />
+      <Router posts={posts} signIn={signIn} setSignIn={setSignIn} signOut={signOut}/>
     </>
   );
 };

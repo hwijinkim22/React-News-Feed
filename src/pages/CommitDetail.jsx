@@ -137,6 +137,7 @@ const CommitDetail = () => {
       // 유저 정보가 있어야만 글쓰기 페이지를 보여줍니다.
       if (user) {
         console.log('수파베이스에서 받아온 유저의 상태:', user);
+        console.log('닉네임:', user.user_metadata.nickname);
         setUser(user); // 받아온 사용자 정보로 user 상태를 업데이트
         // 유저 정보가 없으면 로그인 페이지로 넘깁니다.
       } else {
@@ -173,6 +174,7 @@ const CommitDetail = () => {
     // supabase 테이블에 넣기 위한 유효성 검사 규칙은 아직 모릅니다.
     // 저의 편의상 추가한 유효성 검사입니다.
     let valid = true;
+    const nickname = user.user_metadata.nickname;
 
     // 제목 길이가 40자 미만이면 유효성 검사 false로 바꾸고 에러 메시지 출력.
     if (title.length > 40) {
@@ -198,7 +200,7 @@ const CommitDetail = () => {
         if (post.id) {
           result = await supabase.from('posts').update({ title, content }).eq('id', post.id);
         } else {
-          result = await supabase.from('posts').insert([{ title, content, user_id: user.id }]);
+          result = await supabase.from('posts').insert([{ title, content, user_id: user.id, nickname: nickname }]);
         }
 
         const { error } = result;
@@ -208,7 +210,7 @@ const CommitDetail = () => {
           alert(`데이터 삽입 오류: ${errorMessage}`);
         } else {
           alert('등록되었습니다');
-          navigate('/test');
+          navigate('/');
         }
       }
     }

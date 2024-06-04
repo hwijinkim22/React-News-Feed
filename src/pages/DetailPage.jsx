@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Wrap = styled.div`
@@ -88,10 +88,48 @@ const Wrap = styled.div`
   }
 `;
 
+
 const DetailPage = () => {
+
+  // detailpage 기능 추가 (김병준)
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { item } = location.state || {};
+
+  console.log('아이템 홈에서 넘겨 받은 내용:', item)
+
+  if (!item) {
+    return <p>Loading...</p>;
+  }
+
+  const handleEdit = () => {
+    navigate('/commitdetail', { state: { item } });
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('삭제하면 복구할 수 없습니다. 정말 삭제하시겠습니까?')) {
+      await supabase.from('posts').delete().eq('id', item.id);
+      alert('삭제되었습니다.');
+      navigate('/');
+    }
+  };
+  
+  // 글쓴 시각 포매팅 함수 (김병준)
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분 ${seconds}초`;
+  };
+
   return (
     <Wrap>
-      <Link to="/CommitDetail"> CommitDetail </Link>
+      {/* <Link to="/CommitDetail"> CommitDetail </Link> */}
 
       <div className="detail__wrap">
         <h1>상세페이지</h1>
@@ -101,29 +139,20 @@ const DetailPage = () => {
             <img src="https://placehold.co/340x140" />
 
             <div className="post__list__content">
-              <p className="post__title">게시글 제목</p>
-              <p className="post__user__name">글쓴이</p>
-              <p className="post__date">게시글 작성일</p>
+              <p className="post__title">{item.title}</p>
+              <p className="post__user__name">{item.nickname}</p>
+              <p className="post__date">{formatDate(item.created_at)}</p>
             </div>
           </div>
 
           <div className="detail__post__btns">
-            <button className="post__btn--modify">수정</button>
-            <button className="post__btn--delete">삭제</button>
+            <button className="post__btn--modify" onClick={handleEdit}>수정</button>
+            <button className="post__btn--delete" onClick={handleDelete}>삭제</button>
           </div>
         </div>
 
         <div className="post__content__box">
-          <p>
-            내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다.
-            내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다.
-            내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다.
-            내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다.
-            내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다.
-            내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다.
-            내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다.
-            내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다.
-          </p>
+          <p dangerouslySetInnerHTML={{ __html: item.content }} />
         </div>
       </div>
     </Wrap>
