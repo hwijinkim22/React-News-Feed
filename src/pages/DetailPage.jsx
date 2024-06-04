@@ -5,6 +5,32 @@ const DetailPage = () => {
   return (
     <>
       <Link to="/CommitDetail"> CommitDetail </Link>
+
+      <div>
+        asdasdsad
+      </div>
+      <div>
+        asdasdsad
+      </div>
+      <div>
+        asdasdsad
+      </div>
+      <div>
+        asdasdsad
+      </div>
+      <div>
+        asdasdsad
+      </div>
+      <div>
+        asdasdsad
+      </div>
+      <div>
+        asdasdsad
+      </div>
+      <div>
+        asdasdsad
+      </div>
+
     </>
   );
 };
