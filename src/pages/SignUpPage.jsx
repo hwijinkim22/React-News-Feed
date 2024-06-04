@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import styled from 'styled-components';
 
-const supabase = createClient("https://nozekgjgeindgyulfapu.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vemVrZ2pnZWluZGd5dWxmYXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTcxNDI1MDEsImV4cCI6MjAzMjcxODUwMX0.Wu1dt8WSMSro-_ieydr-ghmfcKPr568Ovm6dfzgrB00");
+const supabase = createClient(
+  'https://nozekgjgeindgyulfapu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vemVrZ2pnZWluZGd5dWxmYXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTcxNDI1MDEsImV4cCI6MjAzMjcxODUwMX0.Wu1dt8WSMSro-_ieydr-ghmfcKPr568Ovm6dfzgrB00'
+);
 
 const Container = styled.div`
   display: flex;
@@ -58,7 +61,7 @@ const SignUpPage = () => {
         password,
         options: {
           data: {
-            nickname,
+            nickname
           }
         }
       });
@@ -88,9 +91,30 @@ const SignUpPage = () => {
     <Container>
       <Title>회원가입 페이지</Title>
       <Form onSubmit={handleSignUp}>
-        <Input type="email" name="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <Input type="password" name="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <Input type="text" name="nickname" placeholder="닉네임" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
+        <Input
+          type="email"
+          name="email"
+          placeholder="이메일"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <Input
+          type="password"
+          name="password"
+          placeholder="비밀번호"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <Input
+          type="text"
+          name="nickname"
+          placeholder="닉네임"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          required
+        />
         <Button type="submit">회원가입</Button>
       </Form>
       <Button onClick={() => navigate('/login')}>로그인</Button>

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { useLocation, useNavigate } from 'react-router-dom';
-import supabase from "../supabaseClient";
+import supabase from '../supabaseClient';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Quill 스타일 import (글쓰기 에디터)
 
@@ -27,7 +27,9 @@ const Button = styled.button`
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &:hover {
@@ -62,20 +64,20 @@ const Form = styled.form`
 `;
 
 const Input = styled.input`
-padding: 12px 16px;
-margin-bottom: 10px;
-border: 1px solid #ddd;
-border-radius: 4px;
-font-size: 16px;
-width: 800px;
-max-width: 100%;
-font-family: 'Helvetica Neue', Arial, sans-serif;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 800px;
+  max-width: 100%;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-&:focus {
-  outline: none;
-  border-color: #007bff;
-}
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+  }
 `;
 
 const ErrorMessage = styled.p`
@@ -129,10 +131,12 @@ const CommitDetail = () => {
   // 글쓰기 페이지가 처음 렌더링 될 때 사용자가 로그인했는지 확인
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser(); // supabase에서 사용자 정보 가져옵니다.
+      const {
+        data: { user }
+      } = await supabase.auth.getUser(); // supabase에서 사용자 정보 가져옵니다.
       // 유저 정보가 있어야만 글쓰기 페이지를 보여줍니다.
       if (user) {
-        console.log("수파베이스에서 받아온 유저의 상태:", user)
+        console.log('수파베이스에서 받아온 유저의 상태:', user);
         setUser(user); // 받아온 사용자 정보로 user 상태를 업데이트
         // 유저 정보가 없으면 로그인 페이지로 넘깁니다.
       } else {
@@ -192,14 +196,9 @@ const CommitDetail = () => {
       if (window.confirm('정말 등록하시겠습니까?')) {
         let result;
         if (post.id) {
-          result = await supabase
-            .from('posts')
-            .update({ title, content })
-            .eq('id', post.id);
+          result = await supabase.from('posts').update({ title, content }).eq('id', post.id);
         } else {
-          result = await supabase
-            .from('posts')
-            .insert([{ title, content, user_id: user.id }]);
+          result = await supabase.from('posts').insert([{ title, content, user_id: user.id }]);
         }
 
         const { error } = result;
@@ -225,7 +224,7 @@ const CommitDetail = () => {
       'violates foreign key constraint': '외래 키 제약 조건을 위반함',
       'cannot insert null value': 'null 값을 삽입할 수 없음',
       'Network request failed': '네트워크 요청 실패',
-      'permission denied for table': '테이블에 대한 권한이 거부됨',
+      'permission denied for table': '테이블에 대한 권한이 거부됨'
     };
 
     // 오류 코드에 따른 추가 처리
@@ -246,45 +245,41 @@ const CommitDetail = () => {
   // 취소 버튼이 클릭될 때 호출할 함수.
   // 컨펌창을 띄울 것이고, 사용자가 경고에도 확인을 누르면 test 컴포넌트로 넘깁니다.(메인 뉴스피드 페이지)
   const handleCancel = () => {
-    if (window.confirm('정말 취소하시겠습니까? 글 작성을 취소하시면 작성하신 내용이 모두 삭제되고 홈으로 이동됩니다.')) {
+    if (
+      window.confirm('정말 취소하시겠습니까? 글 작성을 취소하시면 작성하신 내용이 모두 삭제되고 홈으로 이동됩니다.')
+    ) {
       navigate('/test');
     }
   };
 
   const modules = {
     toolbar: [
-      [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+      [{ header: '1' }, { header: '2' }, { font: [] }],
       [{ size: [] }],
       ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'script': 'sub'}, { 'script': 'super' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }, { 'direction': 'rtl' }],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'align': [] }],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ script: 'sub' }, { script: 'super' }],
+      [{ indent: '-1' }, { indent: '+1' }, { direction: 'rtl' }],
+      [{ color: [] }, { background: [] }],
+      [{ align: [] }],
       ['link', 'image', 'video'],
       ['clean']
-    ],
+    ]
   };
 
   return (
     <Container>
       <Title>글쓰기</Title>
       <Form onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          placeholder="제목을 입력해주세요."
-          value={title}
-          onChange={handleTitleChange}
-          required
-        />
+        <Input type="text" placeholder="제목을 입력해주세요." value={title} onChange={handleTitleChange} required />
         {titleError && <ErrorMessage>{titleError}</ErrorMessage>}
         <EditorContainer>
           <ReactQuill
-           value={content}
-           onChange={setContent}
-           placeholder="내용을 입력해주세요."
-           modules={modules}
-           style={{ height: '700px' }}
+            value={content}
+            onChange={setContent}
+            placeholder="내용을 입력해주세요."
+            modules={modules}
+            style={{ height: '700px' }}
           />
         </EditorContainer>
         {contentError && <ErrorMessage>{contentError}</ErrorMessage>}
