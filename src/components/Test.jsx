@@ -1,3 +1,4 @@
+// Test.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -13,6 +14,7 @@ const PostCard = styled.div`
   border: 1px solid black;
   margin-bottom: 10px;
   padding: 10px;
+  cursor: pointer; // 클릭 가능한 카드로 변경
 `;
 
 const Button = styled.button`
@@ -161,15 +163,15 @@ const Test = () => {
     <Container>
       <h3>데이터 fetch 테스트 페이지입니다.</h3>
       {posts.map((post) => (
-        <PostCard key={post.id}>
+        <PostCard key={post.id} onClick={() => navigate('/detailpage', { state: { post } })}>
           <h5>글 제목: {post.title}</h5>
           <h5>닉네임: {currentUser?.user_metadata?.nickname || post.display_name}</h5>
           <h5>글 내용</h5>
           <ContentContainer dangerouslySetInnerHTML={{ __html: post.content }} />
           {currentUser && currentUser.id === post.user_id && (
             <div>
-              <Button onClick={() => handleEdit(post)}>수정</Button>
-              <DeleteButton onClick={() => handleDelete(post.id)}>삭제</DeleteButton>
+              <Button onClick={(e) => {e.stopPropagation(); handleEdit(post);}}>수정</Button>
+              <DeleteButton onClick={(e) => {e.stopPropagation(); handleDelete(post.id);}}>삭제</DeleteButton>
             </div>
           )}
           <CommentContainer>
