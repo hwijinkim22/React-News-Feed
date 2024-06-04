@@ -1,4 +1,3 @@
-// Test.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -14,7 +13,7 @@ const PostCard = styled.div`
   border: 1px solid black;
   margin-bottom: 10px;
   padding: 10px;
-  cursor: pointer; // 클릭 가능한 카드로 변경
+  cursor: pointer;
 `;
 
 const Button = styled.button`
@@ -70,11 +69,9 @@ const CommentInput = styled.textarea`
   resize: vertical;
 `;
 
-const Test = () => {
+const Test = ({ posts, comments = [] }) => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [comments, setComments] = useState({});
 
   useEffect(() => {
     const getUser = async () => {
@@ -84,39 +81,8 @@ const Test = () => {
       setCurrentUser(user);
     };
 
-    const fetchPosts = async () => {
-      const { data: posts } = await supabase.from('posts').select('*');
-      setPosts(posts);
-      await fetchComments(posts);
-    };
-
     getUser();
-    fetchPosts();
   }, []);
-
-  const fetchComments = async (posts) => {
-    const postIds = posts.map(post => post.id);
-    const { data: comments, error } = await supabase
-      .from('comments')
-      .select('*')
-      .in('post_id', postIds);
-
-    if (error) {
-      console.error('Error fetching comments:', error.message);
-      return;
-    }
-
-    if (comments) {
-      const commentsByPost = {};
-      comments.forEach(comment => {
-        if (!commentsByPost[comment.post_id]) {
-          commentsByPost[comment.post_id] = [];
-        }
-        commentsByPost[comment.post_id].push(comment);
-      });
-      setComments(commentsByPost);
-    }
-  };
 
   const handleEdit = (post) => {
     if (currentUser && currentUser.id === post.user_id) {
@@ -156,14 +122,15 @@ const Test = () => {
       return;
     }
 
-    await fetchComments(posts);
+    alert('댓글이 등록되었습니다.');
+    window.location.reload(); // 새로 댓글 데이터를 불러오기 위해 페이지 리로드
   };
 
   return (
     <Container>
       <h3>데이터 fetch 테스트 페이지입니다.</h3>
       {posts.map((post) => (
-        <PostCard key={post.id} onClick={() => navigate('/detailpage', { state: { post } })}>
+        <PostCard key={post.id}>
           <h5>글 제목: {post.title}</h5>
           <h5>닉네임: {currentUser?.user_metadata?.nickname || post.display_name}</h5>
           <h5>글 내용</h5>
@@ -176,7 +143,7 @@ const Test = () => {
           )}
           <CommentContainer>
             <h6>댓글</h6>
-            {comments[post.id] && comments[post.id].map(comment => (
+            {comments.filter(comment => comment.post_id === post.id).map(comment => (
               <div key={comment.id}>
                 <strong>{comment.user_id}</strong>: {comment.comment}
               </div>

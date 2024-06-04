@@ -9,7 +9,7 @@ import LoginPage from '../pages/LoginPage';
 import SignUpPage from '../pages/SignUpPage';
 import HomeHeader from '../components/HomeHeader';
 
-const Router = ({ posts, signIn, setSignIn, signOut }) => {
+const Router = ({ posts, comments, signIn, setSignIn, signOut }) => {
   return (
     <BrowserRouter>
     <HomeHeader signIn={signIn} signOut={signOut}/>
@@ -18,7 +18,7 @@ const Router = ({ posts, signIn, setSignIn, signOut }) => {
         <Route path="/mypage" element={signIn ? <MyPage/> : <Navigate to="/login" />} />
         <Route path="/commitdetail" element={signIn ? <CommitDetail/> : <Navigate to="/login"/>}  />
         <Route path="/detailpage" element={signIn ? <DetailPage/> : <Navigate to="/login" />} />
-        <Route path="/test" element={<Test posts={posts} />} />
+        <Route path="/test" element={<Test posts={posts} comments={comments} />} />
         <Route path="/login" element={<LoginPage signIn={signIn} setSignIn={setSignIn} signOut={signOut}/>} />
         <Route path="/signup" element={<SignUpPage />} />
       </Routes>
