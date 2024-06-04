@@ -109,20 +109,6 @@ const LoginPage = ({ signIn, setSignIn }) => {
     setSignIn(false);
    }
 
-  // useEffect(() => {
-  //   const { data: authListener } = supabase.auth.onAuthStateChange((session) => {
-  //     if (session) {
-  //       setSignIn(true);
-  //     } else {
-  //       setSignIn(false);
-  //     }
-  //   });
-
-  //   return () => {
-  //     authListener?.subscription?.unsubscribe();
-  //   };
-  // }, [setSignIn]);
-
   console.log(signIn);
   return (
     <Container>
