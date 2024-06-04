@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient("https://nozekgjgeindgyulfapu.supabase.co", "YOUR_SUPABASE_KEY");
+const supabase = createClient('https://nozekgjgeindgyulfapu.supabase.co', 'YOUR_SUPABASE_KEY');
 
 const LoginPage = () => {
   const navigate = useNavigate();
 
   async function signInWithGithub() {
     await supabase.auth.signInWithOAuth({
-      provider: 'github',
+      provider: 'github'
     });
   }
 
