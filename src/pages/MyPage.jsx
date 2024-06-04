@@ -2,11 +2,13 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
+import HomeHeader from '../components/HomeHeader';
 
 const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
+  padding-top: 60px;
 
   display: flex;
   flex-direction: column;
@@ -95,27 +97,30 @@ const MyPage = () => {
     alert('hi');
   };
   return (
-    <Container>
-      <MyPageDiv>마이 페이지</MyPageDiv>
+    <>
+      <HomeHeader />
+      <Container>
+        <MyPageDiv>마이 페이지</MyPageDiv>
 
-      <Profiles>
-        <Profile>
-          <Avatar src={user?.user_metadata?.avatar_url || ''} alt="User Avatar" />
-        </Profile>
-        <Profile>{user?.user_metadata?.nickname || user?.email}</Profile>
-        <Profile onClick={nicknameChange}>✒️</Profile>
-      </Profiles>
+        <Profiles>
+          <Profile>
+            <Avatar src={user?.user_metadata?.avatar_url || ''} alt="User Avatar" />
+          </Profile>
+          <Profile>{user?.user_metadata?.nickname || user?.email}</Profile>
+          <Profile onClick={nicknameChange}>✒️</Profile>
+        </Profiles>
 
-      <Notes>
-        {postList.map((post) => {
-          return (
-            <Note key={post.id}>
-              <Content>{post.title}</Content>
-            </Note>
-          );
-        })}
-      </Notes>
-    </Container>
+        <Notes>
+          {postList.map((post) => {
+            return (
+              <Note key={post.id}>
+                <Content>{post.title}</Content>
+              </Note>
+            );
+          })}
+        </Notes>
+      </Container>
+    </>
   );
 };
 
