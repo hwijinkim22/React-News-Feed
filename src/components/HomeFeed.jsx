@@ -12,7 +12,7 @@ const Container = styled.div`
 `;
 
 const HomeContent = styled.div`
-  margin-top: 40px; /* InputImage와의 간격 조정 */
+  margin-top: 40px;
   width: 1200px;
   height: 100%;
   display: flex;
