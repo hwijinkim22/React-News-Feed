@@ -79,6 +79,10 @@ const HomeHeader = () => {
     navigate('/');
   };
 
+  const moveLogin = () => {
+    navigate('/login');
+  };
+
   return (
     <>
       <Header>
