@@ -18,10 +18,18 @@ const App = () => {
   };
 
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    setSignIn(false);
-  }
+  const signOut = async (e) => {
+    e.preventDefault();
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw error;
+      }
+      setSignIn(false);
+    } catch (error) {
+      console.error('로그아웃 오류 발생', error.message);
+    }
+  };
 
   async function checkSignIn() {
     const {
