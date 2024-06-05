@@ -100,7 +100,6 @@ const MyPage = () => {
       const { data: authData } = await supabase.auth.getUser();
       if (authData?.user) {
         const userId = authData.user.id;
-        // setGetUserId(userId);
         setUser(authData.user);
 
         // 게시물 가져오기

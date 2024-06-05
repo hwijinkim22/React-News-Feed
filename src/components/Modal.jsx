@@ -73,6 +73,10 @@ const Modal = ({ close, userName }) => {
 
   const nameEdit = async (e) => {
     e.preventDefault();
+    if (!name) {
+      alert('닉네임을 입력하세요');
+      return;
+    }
     if (userName) {
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError) {
