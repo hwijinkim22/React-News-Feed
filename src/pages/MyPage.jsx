@@ -1,9 +1,9 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
 import Modal from '../components/Modal';
-// import ImgUpload from '../components/ImgUpload';
+import ImgUpload from '../components/ImgUpload';
 import HomeHeader from '../components/HomeHeader';
 
 const Container = styled.div`
@@ -19,23 +19,28 @@ const Container = styled.div`
 const Profiles = styled.div`
   font-size: 20px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin: 50px auto 0 auto;
+  border-bottom: 1px solid black;
+  width: 450px;
 `;
 
 const Profile = styled.span`
-  padding: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  font-size: 20px;
 `;
 const Nickname = styled.div`
-  padding: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  width: 90px;
+  height: 90px;
+  font-size: 30px;
 `;
 
 const Notes = styled.div`
@@ -53,8 +58,11 @@ const Note = styled.div`
   background-color: #d9d9d9;
   justify-content: center;
   align-items: center;
+  color: black;
+  font-size: 25px;
   &:hover {
     cursor: pointer;
+    background-color: #b9b9b9a6;
   }
 `;
 
@@ -65,39 +73,7 @@ const Content = styled.div`
   text-align: center;
   padding: 20px;
 `;
-const Avatar = styled.img`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
 
-  cursor: pointer;
-`;
-
-const ImgChange = styled.div`
-  display: flex;
-  position: relative;
-
-  &:hover::after {
-    content: '변경';
-    position: absolute;
-    background-color: #000000ca;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-
-    color: white;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    opacity: 1;
-    transition: opacity 0.2s;
-    cursor: pointer;
-  }
-`;
 const MyPage = () => {
   const [postList, setPostList] = useState([]);
   const [user, setUser] = useState(null);
@@ -110,7 +86,10 @@ const MyPage = () => {
       } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        const { data: posts, error } = await supabase.from('posts').select('id, title').eq('user_id', user.id);
+        const { data: posts, error } = await supabase
+          .from('posts')
+          .select('id, title, created_at')
+          .eq('user_id', user.id);
         if (error) {
           console.error('Error fetching posts', error);
         } else {
@@ -124,16 +103,15 @@ const MyPage = () => {
   const changeName = () => {
     setNameModal(true);
   };
+  const sortPosts = postList.sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
 
   return (
     <Container>
-      {/* <MyPageDiv>마이 페이지</MyPageDiv> */}
-
       <Profiles>
         <Profile>
-          <ImgChange>
-            <Avatar src={user?.user_metadata?.avatar_url || ''} alt="User Avatar" />
-          </ImgChange>
+          <ImgUpload user={user} setUser={setUser} />
         </Profile>
         <Profile>{user?.user_metadata?.nickname || user?.email}</Profile>
         <Profile>
@@ -152,13 +130,21 @@ const MyPage = () => {
       </Profiles>
 
       <Notes>
-        {postList.map((post) => {
-          return (
-            <Note key={post.id}>
-              <Content>{post.title}</Content>
+        {sortPosts && sortPosts.length > 0 ? (
+          sortPosts.map((post) => {
+            return (
+              <Note key={post.id}>
+                <Content>{post.title}</Content>
+              </Note>
+            );
+          })
+        ) : (
+          <Link to={'/CommitDetail'} style={{ textDecoration: 'none', color: 'black' }}>
+            <Note>
+              <Content>첫 글을 작성해보세요</Content>
             </Note>
-          );
-        })}
+          </Link>
+        )}
       </Notes>
     </Container>
   );

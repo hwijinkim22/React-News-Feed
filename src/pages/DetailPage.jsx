@@ -69,6 +69,9 @@ const Wrap = styled.div`
     border: 1px solid #000000;
     min-height: 800px;
     padding: 40px;
+    overflow: auto; /* 스크롤 가능하도록 설정(김병준)) */
+    max-width: 100%;
+    word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정(김병준) */
   }
 
   .detail__post__btns {
