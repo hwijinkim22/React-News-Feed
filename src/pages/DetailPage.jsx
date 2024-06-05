@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
+import CommentsSection from '../components/CommentsSection';
 
 const Wrap = styled.div`
   * {
@@ -100,6 +101,24 @@ const DetailPage = () => {
   const navigate = useNavigate();
   const { item } = location.state || {};
   const [currentUser, setCurrentUser] = useState(null);
+  const [users, setUsers] = useState();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data, error } = await supabase.from('users').select('*');
+        if (error) {
+          throw error;
+        }
+        setUsers(data);
+        console.log('디테일 컴포넌트에서 새로 받은 users 테이블 =>', data);
+      } catch (error) {
+        console.error('Error fetching users:', error.message);
+      }
+    };
+
+    fetchUsers();
+  }, []); // 컴포넌트가 마운트될 때 users 데이터를 가져옴
 
   console.log('아이템 홈에서 넘겨 받은 내용:', item);
 
@@ -191,6 +210,8 @@ const DetailPage = () => {
         <div className="post__content__box">
           <p dangerouslySetInnerHTML={{ __html: item.content }} />
         </div>
+        <CommentsSection postId={item.id} users={users} />
+
       </div>
     </Wrap>
   );
