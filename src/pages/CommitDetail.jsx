@@ -118,7 +118,7 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
 `;
 
-const CommitDetail = ({users}) => {
+const CommitDetail = ({users, setUsers}) => {
   const navigate = useNavigate(); // 홈으로 넘기기 위한 훅
   const location = useLocation(); // HomeFeed 컴포넌트에서 글 내용을 넘겨받기 위한 훅(edit 함수에서)
   const { id, title, content, user_id } = location.state || {};
@@ -130,6 +130,14 @@ const CommitDetail = ({users}) => {
   // 글쓰기 페이지가 처음 렌더링 될 때 사용자가 로그인했는지 확인
   const [matchedNickName ,setMatchedNickName] = useState('');
   const [isLoading, setIsLoading] = useState(false); // 로딩 관리
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const { data } = await supabase.from('users').select('*');
+      setUsers(data);
+    };
+    fetchUsers();
+  }, []); // 컴포넌트가 마운트될 때 users 데이터를 가져옴
 
   useEffect(() => {
     const checkUser = async () => {
@@ -161,7 +169,7 @@ const CommitDetail = ({users}) => {
     // plugin:react-hooks/recommended
     // 위 설정 때문에 의존성 배열을 비워두지 않도록 권고하고 있습니다.
     // 따라서 변할 일이 없는 navigate 함수를 넣어놓은 것으로 의미는 없습니다. 빈 배열이나 마찬가지입니다.
-  }, [navigate]);
+  }, [navigate, users]);
 
   // title 필드의 값이 변경될 때 호출할 함수.
   // 길이가 20자 이상이면 경고를 띄우고 20자 미만이면 에러 메시지를 비웁니다.

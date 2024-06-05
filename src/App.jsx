@@ -66,7 +66,7 @@ const App = () => {
       <GlobalStyles />
       <FetchData onDataFetch={handleDataFetch}/>
       <FetchUsers handleUsersFetch={handleUsersFetch}/>
-      <Router posts={posts} setPosts={setPosts} users={users} signIn={signIn} setSignIn={setSignIn} signOut={signOut}/>
+      <Router posts={posts} setPosts={setPosts} users={users} setUsers={setUsers} signIn={signIn} setSignIn={setSignIn} signOut={signOut}/>
     </>
   );
 };
