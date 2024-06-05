@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
+import CommentsSection from '../components/CommentsSection';
 
 const Wrap = styled.div`
   * {
@@ -72,6 +73,7 @@ const Wrap = styled.div`
     overflow: auto; /* 스크롤 가능하도록 설정(김병준)) */
     max-width: 100%;
     word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정(김병준) */
+    border-radius: 20px;
   }
 
   .detail__post__btns {
@@ -99,6 +101,24 @@ const DetailPage = () => {
   const navigate = useNavigate();
   const { item } = location.state || {};
   const [currentUser, setCurrentUser] = useState(null);
+  const [users, setUsers] = useState();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data, error } = await supabase.from('users').select('*');
+        if (error) {
+          throw error;
+        }
+        setUsers(data);
+        console.log('디테일 컴포넌트에서 새로 받은 users 테이블 =>', data);
+      } catch (error) {
+        console.error('Error fetching users:', error.message);
+      }
+    };
+
+    fetchUsers();
+  }, []); // 컴포넌트가 마운트될 때 users 데이터를 가져옴
 
   console.log('아이템 홈에서 넘겨 받은 내용:', item);
 
@@ -125,10 +145,7 @@ const DetailPage = () => {
     console.log('두 사람이 같은 사람인지 확인:', nowUser === authorUser);
     console.log('길이 비교 - 현재 사용자:', nowUser.length, '작성자:', authorUser.length);
 
-    // 이유를 모르겠으나 post를 넘기는데 깊은 복사가 안 되어 구조 분해 할당으로 commitdetail 페이지로 넘김.
-    const { id, title, content, user_id } = post;
     if (currentUser && nowUser === authorUser) {
-      // navigate('/commitdetail', { state: {post : { id, title, content, user_id }} });
       navigate('/commitdetail', { state: post });
     } else {
       alert('멈추세요! 게시글 작성자만 글을 수정할 수 있습니다.');
@@ -143,8 +160,7 @@ const DetailPage = () => {
       if (confirmed) {
         alert('좋습니다. 삭제해드렸습니다.');
         await supabase.from('posts').delete().eq('id', item.id);
-        navigate('/');
-        window.location.reload();
+        navigate('/', { state: { refresh: true } }); // 상태를 전달하여 홈으로 이동
       }
     } else {
       alert('이런! 당신은 이 게시글 작성자가 아니잖아요!');
@@ -169,7 +185,6 @@ const DetailPage = () => {
       {/* <Link to="/CommitDetail"> CommitDetail </Link> */}
 
       <div className="detail__wrap">
-        <h1>상세페이지</h1>
 
         <div className="detail__post__ul">
           <div className="detail__post__list">
@@ -195,6 +210,8 @@ const DetailPage = () => {
         <div className="post__content__box">
           <p dangerouslySetInnerHTML={{ __html: item.content }} />
         </div>
+        <CommentsSection postId={item.id} users={users} />
+
       </div>
     </Wrap>
   );

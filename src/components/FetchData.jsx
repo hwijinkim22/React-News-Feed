@@ -14,7 +14,7 @@ const FetchData = ({ onDataFetch }) => {
     };
 
     fetchData();
-  }, []); // 일단 마운트 시
+  }, []);
 
   return null;
 };
