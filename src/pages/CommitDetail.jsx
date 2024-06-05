@@ -117,7 +117,7 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
 `;
 
-const CommitDetail = () => {
+const CommitDetail = ({users}) => {
   const navigate = useNavigate(); // 홈으로 넘기기 위한 훅
   const location = useLocation(); // HomeFeed 컴포넌트에서 글 내용을 넘겨받기 위한 훅(edit 함수에서)
   const { id, title, content, user_id } = location.state || {};
@@ -131,8 +131,9 @@ const CommitDetail = () => {
   const [titleError, setTitleError] = useState(''); // 제목 에러 메시지 띄우기 위해 상태로 관리
   const [contentError, setContentError] = useState(''); // 내용 에러 메시지 띄우기 위해 상태로 관리
   const [user, setUser] = useState(null); // 사용자 정보 상태 변수와 상태 변경 함수 지정
-
   // 글쓰기 페이지가 처음 렌더링 될 때 사용자가 로그인했는지 확인
+  const [matchedNickName ,setMatchedNickName] = useState('');
+
   useEffect(() => {
     const checkUser = async () => {
       const {
@@ -141,7 +142,16 @@ const CommitDetail = () => {
       // 유저 정보가 있어야만 글쓰기 페이지를 보여줍니다.
       if (user) {
         console.log('수파베이스에서 받아온 유저의 상태:', user);
-        console.log('닉네임:', user.user_metadata.nickname);
+        console.log('users 테이블에서 받아온 유저의 닉네임:', users);
+        console.log('수파베이스 auth_nickname:', user.user_metadata.nickname);
+
+        let matchedUser = users.find(u => u.id === user.id);
+        if (matchedUser) {
+          console.log('users에서 찾은 이 유저의 닉네임은요 => ', matchedUser.nickname);
+          setMatchedNickName(matchedUser.nickname);
+        } else {
+          console.log('users 테이블에서 이 유저의 닉네임을 못찾았습니다요');
+        }
         setUser(user); // 받아온 사용자 정보로 user 상태를 업데이트
         // 유저 정보가 없으면 로그인 페이지로 넘깁니다.
       } else {
@@ -178,7 +188,7 @@ const CommitDetail = () => {
     // supabase 테이블에 넣기 위한 유효성 검사 규칙은 아직 모릅니다.
     // 저의 편의상 추가한 유효성 검사입니다.
     let valid = true;
-    const nickname = user.user_metadata.nickname;
+    const nickname = matchedNickName;
 
     // 제목 길이가 40자 미만이면 유효성 검사 false로 바꾸고 에러 메시지 출력.
     if (postTitle.length > 50) {
@@ -291,8 +301,7 @@ const CommitDetail = () => {
         </EditorContainer>
         {contentError && <ErrorMessage>{contentError}</ErrorMessage>}
         <ButtonGroup>
-          {/* <Button onClick={handleSubmit}>등록</Button> */}
-          <Button type="submit">수정</Button>
+          <Button type="submit">등록</Button>
           <CancelButton onClick={handleCancel}>취소</CancelButton>
         </ButtonGroup>
       </Form>

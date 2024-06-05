@@ -140,7 +140,6 @@ const HomeFeed = ({ posts }) => {
             <HomePostImage src={post.image} />
             <HomePostOverlay>
               <HomePostTitle>{post.title}</HomePostTitle>
-              {/* <HomePostNickname>{post.nickname}</HomePostNickname> */}
               <HomePostNickname>{post.nickname}</HomePostNickname>
               <HomePostContent>{post.content}</HomePostContent>
             </HomePostOverlay>
