@@ -74,7 +74,6 @@ const SignUpPage = () => {
     if(password !== confirmPassword) {
       setMismatchPassword(true);
       setIsSubmitting(false);
-      return;
     }
     try {
       const { data: existEmail } = await supabase
@@ -83,20 +82,19 @@ const SignUpPage = () => {
         .eq('email', email)
         .single();
 
-      if (existEmail) {
-        setEmailError(true);
-        setIsSubmitting(false);
-        return;
-      }
-
       const {data: existNickname } = await supabase
       .from('users')
       .select('nickname')
       .eq('nickname', nickname)
       .single();
 
-      if(existNickname) {
-        setNicknameError(true);
+      if(existEmail || existNickname) {
+        if(existEmail) {
+          setEmailError(true);
+        }
+        if(existNickname) {
+          setNicknameError(true);
+        }
         setIsSubmitting(false);
         return;
       }
@@ -122,7 +120,6 @@ const SignUpPage = () => {
       alert(`회원가입이 완료되었습니다. ${nickname}님 환영합니다!`);
     } catch (error) {
       console.error('회원가입 오류 발생', error);
-      alert("이미 존재하는 이메일입니다! 다른 이메일을 입력해주세요.")
     } finally {
       setIsSubmitting(false);
     }
@@ -160,7 +157,7 @@ const SignUpPage = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        {emailError && <DoubleCheck>이미 사용 중인 이메일입니다 다른 이메일을 입력해주세요.</DoubleCheck>}
+        {emailError && <DoubleCheck>이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.</DoubleCheck>}
         <Input
           type="password"
           name="password"
@@ -177,7 +174,7 @@ const SignUpPage = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        {mismatchPassword && <DoubleCheck>비밀번호가 일치하지 않습니다 다시 입력해주세요.</DoubleCheck>}
+        {mismatchPassword && <DoubleCheck>비밀번호가 일치하지 않습니다. 다시 입력해주세요.</DoubleCheck>}
         <Input
           type="text"
           name="nickname"
@@ -186,7 +183,7 @@ const SignUpPage = () => {
           onChange={(e) => setNickname(e.target.value)}
           required
         />
-        {nicknameError && <DoubleCheck>이미 사용 중인 닉네임입니다 다른 닉네임을 사용해주세요.</DoubleCheck>}
+        {nicknameError && <DoubleCheck>이미 사용 중인 닉네임입니다. 다른 닉네임을 사용해주세요.</DoubleCheck>}
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? '가입 중...' : '회원가입'}
         </Button>
