@@ -236,8 +236,7 @@ const CommitDetail = ({users}) => {
           alert(`데이터 삽입 오류: ${errorMessage}`);
         } else {
           alert('좋아요! 글이 등록되었습니다!');
-          navigate('/');
-          window.location.reload();
+          navigate('/', { state: { refresh: true } }); // 상태를 전달하여 홈으로 이동
         }
       }
     }

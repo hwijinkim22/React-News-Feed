@@ -126,10 +126,7 @@ const DetailPage = () => {
     console.log('두 사람이 같은 사람인지 확인:', nowUser === authorUser);
     console.log('길이 비교 - 현재 사용자:', nowUser.length, '작성자:', authorUser.length);
 
-    // 이유를 모르겠으나 post를 넘기는데 깊은 복사가 안 되어 구조 분해 할당으로 commitdetail 페이지로 넘김.
-    const { id, title, content, user_id } = post;
     if (currentUser && nowUser === authorUser) {
-      // navigate('/commitdetail', { state: {post : { id, title, content, user_id }} });
       navigate('/commitdetail', { state: post });
     } else {
       alert('멈추세요! 게시글 작성자만 글을 수정할 수 있습니다.');
@@ -144,8 +141,7 @@ const DetailPage = () => {
       if (confirmed) {
         alert('좋습니다. 삭제해드렸습니다.');
         await supabase.from('posts').delete().eq('id', item.id);
-        navigate('/');
-        window.location.reload();
+        navigate('/', { state: { refresh: true } }); // 상태를 전달하여 홈으로 이동
       }
     } else {
       alert('이런! 당신은 이 게시글 작성자가 아니잖아요!');
