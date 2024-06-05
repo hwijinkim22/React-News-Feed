@@ -80,7 +80,7 @@ const LoginPage = ({ signIn, setSignIn, signOut }) => {
       }
     } catch (error) {
       console.error('로그인 중 오류 발생:', error.message);
-      alert('존재하지 않는 아이디, 비밀번호입니다.');
+      alert('로그인 오류 발생');
     }
   };
 
