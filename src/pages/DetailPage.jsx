@@ -69,6 +69,9 @@ const Wrap = styled.div`
     border: 1px solid #000000;
     min-height: 800px;
     padding: 40px;
+    overflow: auto; /* 스크롤 가능하도록 설정(김병준)) */
+    max-width: 100%;
+    word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정(김병준) */
   }
 
   .detail__post__btns {
@@ -138,15 +141,15 @@ const DetailPage = () => {
     let nowUser = currentUser.id;
     let authorUser = item.user_id;
     if (currentUser && nowUser === authorUser) {
-      const confirmed = window.confirm('삭제하면 복구할 수 없습니다. 정말 삭제하시겠습니까?')
+      const confirmed = window.confirm('삭제하면 복구할 수 없습니다. 정말 삭제하시겠습니까?');
       if (confirmed) {
         alert('좋습니다. 삭제해드렸습니다.');
         await supabase.from('posts').delete().eq('id', item.id);
         navigate('/');
         window.location.reload();
-      } else {
-        alert('이런! 당신은 이 게시글 작성자가 아니잖아요!')
       }
+    } else {
+      alert('이런! 당신은 이 게시글 작성자가 아니잖아요!');
     }
   };
 
