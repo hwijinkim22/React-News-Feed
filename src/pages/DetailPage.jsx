@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useState, useEffect } from 'react';
+import supabase from '../supabaseClient';
 
 const Wrap = styled.div`
   * {
@@ -95,6 +97,7 @@ const DetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { item } = location.state || {};
+  const [currentUser, setCurrentUser] = useState(null);
 
   console.log('아이템 홈에서 넘겨 받은 내용:', item)
 
@@ -102,18 +105,51 @@ const DetailPage = () => {
     return <p>Loading...</p>;
   }
 
-  const handleEdit = () => {
-    navigate('/commitdetail', { state: { item } });
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+
+    getUser();
+  }, []);
+
+  const handleEdit = (post) => {
+    let nowUser = currentUser.id;
+    let authorUser = item.user_id;
+    console.log('지금 이 글 보고있는 사람 ID:', nowUser, "데이터 타입은: ", typeof nowUser);
+    console.log('글쓴 사람 ID:', authorUser, "데이터 타입은: ", typeof authorUser);
+    console.log('두 사람이 같은 사람인지 확인:', nowUser === authorUser);
+    console.log('길이 비교 - 현재 사용자:', nowUser.length, '작성자:', authorUser.length);
+
+    // 이유를 모르겠으나 post를 넘기는데 깊은 복사가 안 되어 구조 분해 할당으로 commitdetail 페이지로 넘김.
+    const { id, title, content, user_id } = post;
+    if (currentUser && nowUser === authorUser) {
+      // navigate('/commitdetail', { state: {post : { id, title, content, user_id }} });
+      navigate('/commitdetail', { state: post } );
+    } else {
+      alert('멈추세요! 게시글 작성자만 글을 수정할 수 있습니다.');
+    }
   };
 
   const handleDelete = async () => {
-    if (window.confirm('삭제하면 복구할 수 없습니다. 정말 삭제하시겠습니까?')) {
-      await supabase.from('posts').delete().eq('id', item.id);
-      alert('삭제되었습니다.');
-      navigate('/');
+    let nowUser = currentUser.id;
+    let authorUser = item.user_id;
+    if (currentUser && nowUser === authorUser) {
+      const confirmed = window.confirm('삭제하면 복구할 수 없습니다. 정말 삭제하시겠습니까?')
+      if (confirmed) {
+        alert('좋습니다. 삭제해드렸습니다.');
+        await supabase.from('posts').delete().eq('id', item.id);
+        navigate('/');
+        window.location.reload();
+      } else {
+        alert('이런! 당신은 이 게시글 작성자가 아니잖아요!')
+      }
     }
   };
-  
+
   // 글쓴 시각 포매팅 함수 (김병준)
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -123,7 +159,7 @@ const DetailPage = () => {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const seconds = String(date.getSeconds()).padStart(2, '0');
-    
+
     return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분 ${seconds}초`;
   };
 
@@ -146,7 +182,7 @@ const DetailPage = () => {
           </div>
 
           <div className="detail__post__btns">
-            <button className="post__btn--modify" onClick={handleEdit}>수정</button>
+            <button className="post__btn--modify" onClick={() => handleEdit(item)}>수정</button>
             <button className="post__btn--delete" onClick={handleDelete}>삭제</button>
           </div>
         </div>
