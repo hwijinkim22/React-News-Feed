@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
@@ -78,6 +78,7 @@ const MyPage = () => {
   const [postList, setPostList] = useState([]);
   const [user, setUser] = useState(null);
   const [nameModal, setNameModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -88,7 +89,7 @@ const MyPage = () => {
         setUser(user);
         const { data: posts, error } = await supabase
           .from('posts')
-          .select('id, title, created_at')
+          .select('id, title, created_at, content, user_id, nickname')
           .eq('user_id', user.id);
         if (error) {
           console.error('Error fetching posts', error);
@@ -106,6 +107,12 @@ const MyPage = () => {
   const sortPosts = postList.sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
+
+  // 마이페이지 아이템 넘기기용 함수 (김병준)
+  const handleItemSelect = (id) => {
+    const item = postList.find(item => item.id === id);
+    navigate('/detailpage', { state: { item } });
+  }
 
   return (
     <Container>
@@ -133,7 +140,7 @@ const MyPage = () => {
         {sortPosts && sortPosts.length > 0 ? (
           sortPosts.map((post) => {
             return (
-              <Note key={post.id}>
+              <Note key={post.id} onClick={() => handleItemSelect(post.id)}>
                 <Content>{post.title}</Content>
               </Note>
             );
