@@ -17,7 +17,7 @@ const Router = ({ posts, setPosts, users, setUsers, comments, signIn, setSignIn,
         <Route path="/" element={<Home posts={posts} setPosts={setPosts} users={users} />} />
         <Route path="/mypage" element={signIn ? <MyPage /> : <Navigate to="/login" />} />
         <Route path="/commitdetail" element={signIn ? <CommitDetail users={users} setUsers={setUsers}/> : <Navigate to="/login" />} />
-        <Route path="/detailpage" element={signIn ? <DetailPage /> : <Navigate to="/login" />} />
+        <Route path="/detailpage" element={<DetailPage />} />
         <Route path="/test" element={<Test posts={posts} comments={comments} />} />
         <Route path="/login" element={<LoginPage signIn={signIn} setSignIn={setSignIn} signOut={signOut} />} />
         <Route path="/signup" element={<SignUpPage />} />
