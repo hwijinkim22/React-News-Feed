@@ -112,9 +112,15 @@ const HomeFeed = ({ posts }) => {
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
 
-  const moveDetailPage = (id) => {
-    navigate(`/detailpage/${id}`);
-  };
+  // const moveDetailPage = (id) => {
+  //   navigate(`/detailpage/${id}`);
+  // };
+
+  // HomeFeed 컴포넌트에서 DetailPage 컴포넌트로 item을 id로 넘기는 함수
+  const handleItemSelect = (id) => {
+    const item = posts.find(item => item.id === id);
+    navigate('/detailpage', { state: { item } });
+  }
 
   const handleSearch = (feed) => {
     setSearchFeed(feed);
@@ -130,10 +136,11 @@ const HomeFeed = ({ posts }) => {
       <HomeInput onSearch={handleSearch} />
       <HomeContent>
         {filterdPosts.slice(0, showAll ? filterdPosts.length : 9).map((post) => (
-          <HomePost key={post.id} onClick={() => moveDetailPage(post.id)}>
+          <HomePost key={post.id} onClick={() => handleItemSelect(post.id)}>
             <HomePostImage src={post.image} />
             <HomePostOverlay>
               <HomePostTitle>{post.title}</HomePostTitle>
+              {/* <HomePostNickname>{post.nickname}</HomePostNickname> */}
               <HomePostNickname>{post.nickname}</HomePostNickname>
               <HomePostContent>{post.content}</HomePostContent>
             </HomePostOverlay>
