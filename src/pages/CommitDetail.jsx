@@ -119,11 +119,15 @@ const ButtonGroup = styled.div`
 
 const CommitDetail = () => {
   const navigate = useNavigate(); // 홈으로 넘기기 위한 훅
-  const location = useLocation(); // test 컴포넌트에서 글 내용을 넘겨받기 위한 훅(edit 함수에서)
-  const post = location.state?.post || {};
+  const location = useLocation(); // HomeFeed 컴포넌트에서 글 내용을 넘겨받기 위한 훅(edit 함수에서)
+  const { id, title, content, user_id } = location.state || {};
+  // console.log('넘겨받은 아이디:', id, '넘겨받은 타이틀:', title, '넘겨받은 컨텐츠:', content, '넘겨받은 유저아이디:', user_id);
+  useEffect(() => {
+    console.log('넘겨받은 아이디:', id, '넘겨받은 타이틀:', title, '넘겨받은 컨텐츠:', content, '넘겨받은 유저아이디:', user_id);
+  }, [id, title, content, user_id]);
 
-  const [title, setTitle] = useState(post.title || ''); // 글 제목(title)을 상태로 관리(test에서 넘겨받은 값)
-  const [content, setContent] = useState(post.content || ''); // 글 내용(content)을 상태로 관리(test에서 넘겨받은 값)
+  const [postTitle, setPostTitle] = useState(title || ''); // 글 제목(title)을 상태로 관리(test에서 넘겨받은 값)
+  const [postContent, setPostContent] = useState(content || ''); // 글 내용(content)을 상태로 관리(test에서 넘겨받은 값)
   const [titleError, setTitleError] = useState(''); // 제목 에러 메시지 띄우기 위해 상태로 관리
   const [contentError, setContentError] = useState(''); // 내용 에러 메시지 띄우기 위해 상태로 관리
   const [user, setUser] = useState(null); // 사용자 정보 상태 변수와 상태 변경 함수 지정
@@ -137,6 +141,7 @@ const CommitDetail = () => {
       // 유저 정보가 있어야만 글쓰기 페이지를 보여줍니다.
       if (user) {
         console.log('수파베이스에서 받아온 유저의 상태:', user);
+        console.log('닉네임:', user.user_metadata.nickname);
         setUser(user); // 받아온 사용자 정보로 user 상태를 업데이트
         // 유저 정보가 없으면 로그인 페이지로 넘깁니다.
       } else {
@@ -158,12 +163,12 @@ const CommitDetail = () => {
   // 일반 변수로 호출하면 실시간 리렌더링이 되지 않습니다.
   const handleTitleChange = (e) => {
     const value = e.target.value;
-    if (value.length > 40) {
-      setTitleError('제목은 최대 40자까지 작성 가능합니다.');
+    if (value.length > 50) {
+      setTitleError('이런! 제목은 50자 미만이 좋겠군요!');
     } else {
       setTitleError('');
     }
-    setTitle(value);
+    setPostTitle(value);
   };
 
   // 작성 버튼을 눌렀을 때(폼이 제출될 때) 호출할 함수입니다.
@@ -173,18 +178,19 @@ const CommitDetail = () => {
     // supabase 테이블에 넣기 위한 유효성 검사 규칙은 아직 모릅니다.
     // 저의 편의상 추가한 유효성 검사입니다.
     let valid = true;
+    const nickname = user.user_metadata.nickname;
 
     // 제목 길이가 40자 미만이면 유효성 검사 false로 바꾸고 에러 메시지 출력.
-    if (title.length > 40) {
-      setTitleError('제목은 최대 40자까지 작성 가능합니다.');
+    if (postTitle.length > 50) {
+      setTitleError('이런! 제목은 50자 미만이 좋겠군요!');
       valid = false;
-    } else if (title.length === 0) {
-      setTitleError('제목을 입력해주세요.');
+    } else if (postTitle.length === 0) {
+      setTitleError('음... 제목이 없는 것 같은데요?');
       valid = false;
     }
 
-    if (content.length === 0) {
-      setContentError('내용을 입력해주세요.');
+    if (postContent.length === 0) {
+      setContentError('이런! 글을 쓰시는 걸 깜빡하신 건가요?');
       valid = false;
     } else {
       setContentError('');
@@ -193,12 +199,12 @@ const CommitDetail = () => {
     // 여기까지 통과했는데 유효성 검사가 true이면서 user 객체가 있으면(로그인 되어 있으면)
     // supabase posts 테이블을 참조(from)해서 데이터를 하나의 객체로 채워 넣습니다.(insert)
     if (valid && user) {
-      if (window.confirm('정말 등록하시겠습니까?')) {
+      if (window.confirm('정말 글을 등록하실 건가요?')) {
         let result;
-        if (post.id) {
-          result = await supabase.from('posts').update({ title, content }).eq('id', post.id);
+        if (id) {
+          result = await supabase.from('posts').update({ title: postTitle, content: postContent }).eq('id', id);
         } else {
-          result = await supabase.from('posts').insert([{ title, content, user_id: user.id }]);
+          result = await supabase.from('posts').insert([{ title: postTitle, content: postContent, user_id: user.id, nickname: nickname }]);
         }
 
         const { error } = result;
@@ -207,8 +213,9 @@ const CommitDetail = () => {
           const errorMessage = translateErrorMessage(error.message, error.code);
           alert(`데이터 삽입 오류: ${errorMessage}`);
         } else {
-          alert('등록되었습니다');
-          navigate('/test');
+          alert('좋아요! 글이 등록되었습니다!');
+          navigate('/');
+          window.location.reload();
         }
       }
     }
@@ -246,9 +253,9 @@ const CommitDetail = () => {
   // 컨펌창을 띄울 것이고, 사용자가 경고에도 확인을 누르면 test 컴포넌트로 넘깁니다.(메인 뉴스피드 페이지)
   const handleCancel = () => {
     if (
-      window.confirm('정말 취소하시겠습니까? 글 작성을 취소하시면 작성하신 내용이 모두 삭제되고 홈으로 이동됩니다.')
+      window.confirm('취소를 누르면 작성한 내용을 복구해드릴 수 없어요. 괜찮으시겠어요?')
     ) {
-      navigate('/test');
+      navigate('/');
     }
   };
 
@@ -271,23 +278,25 @@ const CommitDetail = () => {
     <Container>
       <Title>글쓰기</Title>
       <Form onSubmit={handleSubmit}>
-        <Input type="text" placeholder="제목을 입력해주세요." value={title} onChange={handleTitleChange} required />
+        <Input type="text" placeholder="제목을 입력해주세요." value={postTitle} onChange={handleTitleChange} required />
         {titleError && <ErrorMessage>{titleError}</ErrorMessage>}
         <EditorContainer>
           <ReactQuill
-            value={content}
-            onChange={setContent}
+            value={postContent}
+            onChange={setPostContent}
             placeholder="내용을 입력해주세요."
             modules={modules}
             style={{ height: '700px' }}
           />
         </EditorContainer>
         {contentError && <ErrorMessage>{contentError}</ErrorMessage>}
+        <ButtonGroup>
+          {/* <Button onClick={handleSubmit}>등록</Button> */}
+          <Button type="submit">수정</Button>
+          <CancelButton onClick={handleCancel}>취소</CancelButton>
+        </ButtonGroup>
       </Form>
-      <ButtonGroup>
-        <Button onClick={handleSubmit}>등록</Button>
-        <CancelButton onClick={handleCancel}>취소</CancelButton>
-      </ButtonGroup>
+
     </Container>
   );
 };
