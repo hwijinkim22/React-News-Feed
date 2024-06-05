@@ -121,7 +121,8 @@ const SignUpPage = () => {
       navigate('/');
       alert(`회원가입이 완료되었습니다. ${nickname}님 환영합니다!`);
     } catch (error) {
-      console.error('회원가입 오류 발생', error.message);
+      console.error('회원가입 오류 발생', error);
+      alert("이미 존재하는 이메일입니다! 다른 이메일을 입력해주세요.")
     } finally {
       setIsSubmitting(false);
     }
