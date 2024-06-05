@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import homeimage from '../image/homeimage.png';
-import CommitDetail from '../pages/CommitDetail';
 
 const Header = styled.div`
   position: fixed;
@@ -16,7 +15,7 @@ const Header = styled.div`
   justify-content: center;
   align-items: center;
   padding: 0 20px;
-  z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정 */
+  z-index: 1000;
 `;
 
 const HeaderBtns = styled.div`
@@ -85,10 +84,10 @@ const HomeHeader = ({ signIn, signOut }) => {
   };
 
   const moveCommitDetail = () => {
-    console.log("Before signIn=", signIn);
+    console.log('Before signIn=', signIn);
     navigate('/commitdetail');
-    console.log("After signIn=", signIn);
-  }
+    console.log('After signIn=', signIn);
+  };
 
   return (
     <>
@@ -98,8 +97,8 @@ const HomeHeader = ({ signIn, signOut }) => {
         <HeaderBtns hide={hideButtons ? 'true' : 'false'}>
           {signIn ? (
             <>
-            <HeaderBtn onClick={signOut}>로그아웃</HeaderBtn>
-            <HeaderBtn onClick={moveCommitDetail}>글쓰기</HeaderBtn>
+              <HeaderBtn onClick={signOut}>로그아웃</HeaderBtn>
+              <HeaderBtn onClick={moveCommitDetail}>글쓰기</HeaderBtn>
             </>
           ) : (
             <HeaderBtn onClick={moveLogin}>로그인</HeaderBtn>

@@ -93,16 +93,14 @@ const Wrap = styled.div`
   }
 `;
 
-
 const DetailPage = () => {
-
   // detailpage 기능 추가 (김병준)
   const location = useLocation();
   const navigate = useNavigate();
   const { item } = location.state || {};
   const [currentUser, setCurrentUser] = useState(null);
 
-  console.log('아이템 홈에서 넘겨 받은 내용:', item)
+  console.log('아이템 홈에서 넘겨 받은 내용:', item);
 
   if (!item) {
     return <p>Loading...</p>;
@@ -122,8 +120,8 @@ const DetailPage = () => {
   const handleEdit = (post) => {
     let nowUser = currentUser.id;
     let authorUser = item.user_id;
-    console.log('지금 이 글 보고있는 사람 ID:', nowUser, "데이터 타입은: ", typeof nowUser);
-    console.log('글쓴 사람 ID:', authorUser, "데이터 타입은: ", typeof authorUser);
+    console.log('지금 이 글 보고있는 사람 ID:', nowUser, '데이터 타입은: ', typeof nowUser);
+    console.log('글쓴 사람 ID:', authorUser, '데이터 타입은: ', typeof authorUser);
     console.log('두 사람이 같은 사람인지 확인:', nowUser === authorUser);
     console.log('길이 비교 - 현재 사용자:', nowUser.length, '작성자:', authorUser.length);
 
@@ -131,7 +129,7 @@ const DetailPage = () => {
     const { id, title, content, user_id } = post;
     if (currentUser && nowUser === authorUser) {
       // navigate('/commitdetail', { state: {post : { id, title, content, user_id }} });
-      navigate('/commitdetail', { state: post } );
+      navigate('/commitdetail', { state: post });
     } else {
       alert('멈추세요! 게시글 작성자만 글을 수정할 수 있습니다.');
     }
@@ -185,8 +183,12 @@ const DetailPage = () => {
           </div>
 
           <div className="detail__post__btns">
-            <button className="post__btn--modify" onClick={() => handleEdit(item)}>수정</button>
-            <button className="post__btn--delete" onClick={handleDelete}>삭제</button>
+            <button className="post__btn--modify" onClick={() => handleEdit(item)}>
+              수정
+            </button>
+            <button className="post__btn--delete" onClick={handleDelete}>
+              삭제
+            </button>
           </div>
         </div>
 

@@ -12,6 +12,7 @@ const Container = styled.div`
   justify-content: center;
   max-width: 800px;
   margin: 0 auto;
+  margin-top: 60px;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 12px;
@@ -123,7 +124,16 @@ const CommitDetail = ({users}) => {
   const { id, title, content, user_id } = location.state || {};
   // console.log('넘겨받은 아이디:', id, '넘겨받은 타이틀:', title, '넘겨받은 컨텐츠:', content, '넘겨받은 유저아이디:', user_id);
   useEffect(() => {
-    console.log('넘겨받은 아이디:', id, '넘겨받은 타이틀:', title, '넘겨받은 컨텐츠:', content, '넘겨받은 유저아이디:', user_id);
+    console.log(
+      '넘겨받은 아이디:',
+      id,
+      '넘겨받은 타이틀:',
+      title,
+      '넘겨받은 컨텐츠:',
+      content,
+      '넘겨받은 유저아이디:',
+      user_id
+    );
   }, [id, title, content, user_id]);
 
   const [postTitle, setPostTitle] = useState(title || ''); // 글 제목(title)을 상태로 관리(test에서 넘겨받은 값)
@@ -214,7 +224,9 @@ const CommitDetail = ({users}) => {
         if (id) {
           result = await supabase.from('posts').update({ title: postTitle, content: postContent }).eq('id', id);
         } else {
-          result = await supabase.from('posts').insert([{ title: postTitle, content: postContent, user_id: user.id, nickname: nickname }]);
+          result = await supabase
+            .from('posts')
+            .insert([{ title: postTitle, content: postContent, user_id: user.id, nickname: nickname }]);
         }
 
         const { error } = result;
@@ -262,9 +274,7 @@ const CommitDetail = ({users}) => {
   // 취소 버튼이 클릭될 때 호출할 함수.
   // 컨펌창을 띄울 것이고, 사용자가 경고에도 확인을 누르면 test 컴포넌트로 넘깁니다.(메인 뉴스피드 페이지)
   const handleCancel = () => {
-    if (
-      window.confirm('취소를 누르면 작성한 내용을 복구해드릴 수 없어요. 괜찮으시겠어요?')
-    ) {
+    if (window.confirm('취소를 누르면 작성한 내용을 복구해드릴 수 없어요. 괜찮으시겠어요?')) {
       navigate('/');
     }
   };
@@ -305,7 +315,6 @@ const CommitDetail = ({users}) => {
           <CancelButton onClick={handleCancel}>취소</CancelButton>
         </ButtonGroup>
       </Form>
-
     </Container>
   );
 };

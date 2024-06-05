@@ -80,6 +80,8 @@ const MyPage = () => {
   const [nameModal, setNameModal] = useState(false);
   const navigate = useNavigate();
 
+  console.log(user);
+
   useEffect(() => {
     const fetchPosts = async () => {
       const {
