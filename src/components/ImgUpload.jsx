@@ -51,19 +51,18 @@ const ImgUpload = ({ user, setUser }) => {
     }
   };
 
-  const defaultProfile = async () => {
-    const img = user?.user_metadata?.avatar_url;
-    if (!img) {
-      const { data } = supabase.storage.from('profile').getPublicUrl('default-profile.jpg');
-      if (data) {
-        setImgFile(data.publicUrl);
-      }
-    } else {
-      setImgFile(img);
-    }
-  };
-
   useEffect(() => {
+    const defaultProfile = async () => {
+      const img = user?.user_metadata?.avatar_url;
+      if (!img) {
+        const { data } = supabase.storage.from('profile').getPublicUrl('default-profile.jpg');
+        if (data) {
+          setImgFile(data.publicUrl);
+        }
+      } else {
+        setImgFile(img);
+      }
+    };
     defaultProfile();
   }, [user]);
 

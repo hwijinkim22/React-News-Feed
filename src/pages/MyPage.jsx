@@ -90,7 +90,10 @@ const MyPage = () => {
         const { data: posts, error } = await supabase
           .from('posts')
           .select('id, title, created_at, content, user_id, nickname')
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .order('created_at', {
+            ascending: false
+          });
         if (error) {
           console.error('Error fetching posts', error);
         } else {
@@ -104,15 +107,12 @@ const MyPage = () => {
   const changeName = () => {
     setNameModal(true);
   };
-  const sortPosts = postList.sort((a, b) => {
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
 
   // 마이페이지 아이템 넘기기용 함수 (김병준)
   const handleItemSelect = (id) => {
-    const item = postList.find(item => item.id === id);
+    const item = postList.find((item) => item.id === id);
     navigate('/detailpage', { state: { item } });
-  }
+  };
 
   return (
     <Container>
@@ -137,8 +137,8 @@ const MyPage = () => {
       </Profiles>
 
       <Notes>
-        {sortPosts && sortPosts.length > 0 ? (
-          sortPosts.map((post) => {
+        {postList && postList.length > 0 ? (
+          postList.map((post) => {
             return (
               <Note key={post.id} onClick={() => handleItemSelect(post.id)}>
                 <Content>{post.title}</Content>
