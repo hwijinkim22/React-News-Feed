@@ -58,9 +58,11 @@ const Note = styled.div`
   background-color: #d9d9d9;
   justify-content: center;
   align-items: center;
+  color: black;
+  font-size: 25px;
   &:hover {
     cursor: pointer;
-    background-color: #dddddd;
+    background-color: #b9b9b9a6;
   }
 `;
 

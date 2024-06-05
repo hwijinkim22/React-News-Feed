@@ -10,6 +10,7 @@ const Avatar = styled.img`
   object-fit: cover;
   text-align: center;
   cursor: pointer;
+  padding: 5px;
 `;
 
 const ImgChange = styled.div`
@@ -24,6 +25,7 @@ const ImgChange = styled.div`
     height: 90px;
     border-radius: 50%;
     object-fit: cover;
+    padding: 5px;
 
     color: white;
 
