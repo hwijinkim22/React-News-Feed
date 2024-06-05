@@ -86,7 +86,10 @@ const MyPage = () => {
       } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        const { data: posts, error } = await supabase.from('posts').select('id, title').eq('user_id', user.id);
+        const { data: posts, error } = await supabase
+          .from('posts')
+          .select('id, title, created_at')
+          .eq('user_id', user.id);
         if (error) {
           console.error('Error fetching posts', error);
         } else {
@@ -100,7 +103,6 @@ const MyPage = () => {
   const changeName = () => {
     setNameModal(true);
   };
-
   return (
     <Container>
       <Profiles>
@@ -122,7 +124,7 @@ const MyPage = () => {
           )}
         </Profile>
       </Profiles>
-
+      {console.log(postList)}
       <Notes>
         {postList && postList.length > 0 ? (
           postList.map((post) => {
