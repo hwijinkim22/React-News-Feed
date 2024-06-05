@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import inputimage from '../image/inputimage.png';
 import HomeInput from './HomeInput';
+import Footer from './Footer';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
 `;
 
 const HomeContent = styled.div`
-  margin-top: 40px; /* InputImage와의 간격 조정 */
+  margin-top: 40px;
   width: 1200px;
   height: 100%;
   display: flex;
@@ -58,7 +57,7 @@ const HomePostOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100px;
-  background: rgba(0, 0, 0, 0.5);
+  background: #343434;
   color: white;
   padding: 10px;
   box-sizing: border-box;
@@ -66,25 +65,21 @@ const HomePostOverlay = styled.div`
   flex-direction: column;
 `;
 
+const HomePostUserImage = styled.div``;
+
 const HomePostTitle = styled.h5`
   margin: 0;
   font-size: 20px;
-  color: black;
+  color: white;
+  display: flex;
+  justify-content: center;
 `;
 
 const HomePostNickname = styled.h5`
-  margin: 0;
+  margin-top: 10px;
   font-size: 14px;
-`;
-
-const HomePostContent = styled.p`
-  margin: 5px 0 0;
-  font-size: 16px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: flex;
+  justify-content: center;
 `;
 
 const MoreButton = styled.button`
@@ -112,15 +107,11 @@ const HomeFeed = ({ posts }) => {
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
 
-  // const moveDetailPage = (id) => {
-  //   navigate(`/detailpage/${id}`);
-  // };
-
   // HomeFeed 컴포넌트에서 DetailPage 컴포넌트로 item을 id로 넘기는 함수
   const handleItemSelect = (id) => {
-    const item = posts.find(item => item.id === id);
+    const item = posts.find((item) => item.id === id);
     navigate('/detailpage', { state: { item } });
-  }
+  };
 
   const handleSearch = (feed) => {
     setSearchFeed(feed);
@@ -135,13 +126,13 @@ const HomeFeed = ({ posts }) => {
     <Container>
       <HomeInput onSearch={handleSearch} />
       <HomeContent>
-        {filterdPosts.slice(0, showAll ? filterdPosts.length : 9).map((post) => (
+        {filterdPosts.slice(0, showAll ? filterdPosts.length : 4).map((post) => (
           <HomePost key={post.id} onClick={() => handleItemSelect(post.id)}>
-            <HomePostImage src={post.image} />
+            <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
             <HomePostOverlay>
+              <HomePostUserImage></HomePostUserImage>
               <HomePostTitle>{post.title}</HomePostTitle>
               <HomePostNickname>{post.nickname}</HomePostNickname>
-              <HomePostContent>{post.content}</HomePostContent>
             </HomePostOverlay>
           </HomePost>
         ))}
@@ -151,6 +142,7 @@ const HomeFeed = ({ posts }) => {
       ) : (
         <MoreButton onClick={() => setShowAll(true)}>더보기</MoreButton>
       )}
+      <Footer />
     </Container>
   );
 };
