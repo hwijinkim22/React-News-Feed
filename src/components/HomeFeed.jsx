@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeInput from './HomeInput';
+import Footer from './Footer';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
 `;
 
 const HomeContent = styled.div`
@@ -124,26 +124,29 @@ const HomeFeed = ({ posts }) => {
   );
 
   return (
-    <Container>
-      <HomeInput onSearch={handleSearch} />
-      <HomeContent>
-        {filterdPosts.slice(0, showAll ? filterdPosts.length : 10).map((post) => (
-          <HomePost key={post.id} onClick={() => moveDetailPage(post.id)}>
-            <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
-            <HomePostOverlay>
-              <HomePostTitle>{post.title}</HomePostTitle>
-              <HomePostNickname>{post.nickname}</HomePostNickname>
-              <HomePostContent></HomePostContent>
-            </HomePostOverlay>
-          </HomePost>
-        ))}
-      </HomeContent>
-      {showAll ? (
-        <CloseButton onClick={() => setShowAll(false)}>닫기</CloseButton>
-      ) : (
-        <MoreButton onClick={() => setShowAll(true)}>더보기</MoreButton>
-      )}
-    </Container>
+    <>
+      <Container>
+        <HomeInput onSearch={handleSearch} />
+        <HomeContent>
+          {filterdPosts.slice(0, showAll ? filterdPosts.length : 10).map((post) => (
+            <HomePost key={post.id} onClick={() => moveDetailPage(post.id)}>
+              <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
+              <HomePostOverlay>
+                <HomePostTitle>{post.title}</HomePostTitle>
+                <HomePostNickname>{post.nickname}</HomePostNickname>
+                <HomePostContent></HomePostContent>
+              </HomePostOverlay>
+            </HomePost>
+          ))}
+        </HomeContent>
+        {showAll ? (
+          <CloseButton onClick={() => setShowAll(false)}>닫기</CloseButton>
+        ) : (
+          <MoreButton onClick={() => setShowAll(true)}>더보기</MoreButton>
+        )}
+        <Footer />
+      </Container>
+    </>
   );
 };
 
