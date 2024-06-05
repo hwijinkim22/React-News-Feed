@@ -19,4 +19,22 @@ const FetchData = ({ onDataFetch }) => {
   return null;
 };
 
-export default FetchData;
+const FetchUsers = ({ handleUsersFetch }) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabase.from('users').select('*');
+      if (error) {
+        console.log('유저 테이블 못 불러옴 => ', error);
+      } else {
+        console.log('유저 테이블 잘 불러옴 => ', data);
+        handleUsersFetch(data);
+      }
+    };
+
+    fetchData();
+  }, []); // 일단 마운트 시
+
+  return null;
+};
+
+export { FetchData, FetchUsers } ;

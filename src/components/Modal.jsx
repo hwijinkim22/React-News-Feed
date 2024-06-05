@@ -108,7 +108,9 @@ const Modal = ({ close, user, setUser }) => {
           <form onSubmit={nameEdit}>
             <Input type="text" value={name} onChange={nameChange} autoFocus />
             <Button type="submit">수정</Button>
-            <Button onClick={close}>닫기</Button>
+            <Button type="button" onClick={close}>
+              닫기
+            </Button>
           </form>
         </Contents>
       </ModalWrap>
