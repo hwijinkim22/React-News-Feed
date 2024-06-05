@@ -1,10 +1,8 @@
 import HomeFeed from '../components/HomeFeed';
-import HomeHeader from '../components/HomeHeader';
 
 const Home = ({ posts }) => {
   return (
     <>
-      <HomeHeader />
       <HomeFeed posts={posts} />
     </>
   );

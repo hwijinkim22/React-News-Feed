@@ -55,7 +55,7 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vemVrZ2pnZWluZGd5dWxmYXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTcxNDI1MDEsImV4cCI6MjAzMjcxODUwMX0.Wu1dt8WSMSro-_ieydr-ghmfcKPr568Ovm6dfzgrB00'
 );
 
-const LoginPage = ({ signIn, setSignIn }) => {
+const LoginPage = ({ signIn, setSignIn, signOut }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -104,26 +104,13 @@ const LoginPage = ({ signIn, setSignIn }) => {
     }
   }
 
-  const signOut = async (e) => {
-    e.preventDefault();
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw error;
-      }
-      setSignIn(false);
-    } catch (error) {
-      console.error('로그아웃 오류 발생', error.message);
-    }
-  };
-
   console.log(signIn);
   return (
     <Container>
       <Title>로그인 페이지</Title>
       {signIn ? (
         <>
-          <p>님 환영합니다!</p>
+          <p>환영합니다!</p>
           <Button onClick={signOut}>로그아웃</Button>
         </>
       ) : (
