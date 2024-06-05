@@ -103,6 +103,10 @@ const MyPage = () => {
   const changeName = () => {
     setNameModal(true);
   };
+  const sortPosts = postList.sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
   return (
     <Container>
       <Profiles>
@@ -124,10 +128,10 @@ const MyPage = () => {
           )}
         </Profile>
       </Profiles>
-      {console.log(postList)}
+
       <Notes>
-        {postList && postList.length > 0 ? (
-          postList.map((post) => {
+        {sortPosts && sortPosts.length > 0 ? (
+          sortPosts.map((post) => {
             return (
               <Note key={post.id}>
                 <Content>{post.title}</Content>
