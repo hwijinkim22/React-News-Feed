@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 
 const supabase = createClient(
   'https://nozekgjgeindgyulfapu.supabase.co',
@@ -47,38 +47,86 @@ const Button = styled.button`
   }
 `;
 
+const DoubleCheck = styled.span`
+  color: #ed5b5b;
+  font-size: 12px;
+  margin-top: 5px;
+`;
+
 const SignUpPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [mismatchPassword, setMismatchPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [nickname, setNickname] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [nicknameError, setNicknameError] = useState(false);
 
   const signUpWithEmail = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setEmailError(false);
+    setNicknameError(false);
+    setMismatchPassword(false);
+
+    if(password !== confirmPassword) {
+      setMismatchPassword(true);
+      setIsSubmitting(false);
+      return;
+    }
     try {
-      setIsSubmitting(true);
+      const { data: existEmail } = await supabase
+        .from('users')
+        .select('email')
+        .eq('email', email)
+        .single();
+
+      if (existEmail) {
+        setEmailError(true);
+        setIsSubmitting(false);
+        return;
+      }
+
+      const {data: existNickname } = await supabase
+      .from('users')
+      .select('nickname')
+      .eq('nickname', nickname)
+      .single();
+
+      if(existNickname) {
+        setNicknameError(true);
+        setIsSubmitting(false);
+        return;
+      }
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            nickname
-          }
-        }
       });
 
       if (error) {
         throw error;
       }
 
-      navigate('/login');
+      const { error: insertError } = await supabase
+      .from('users')
+      .insert({nickname, email})
+
+      if(insertError) {
+        throw insertError;
+      }
+      
+      navigate('/');
+      alert(`회원가입이 완료되었습니다. ${nickname}님 환영합니다!`);
     } catch (error) {
       console.error('회원가입 오류 발생', error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   const handleSignUp = async () => {
     try {
@@ -111,6 +159,7 @@ const SignUpPage = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+        {emailError && <DoubleCheck>이미 사용 중인 이메일입니다 다른 이메일을 입력해주세요.</DoubleCheck>}
         <Input
           type="password"
           name="password"
@@ -120,6 +169,15 @@ const SignUpPage = () => {
           required
         />
         <Input
+          type="password"
+          name="confirmPassword"
+          placeholder="비밀번호 확인"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+        {mismatchPassword && <DoubleCheck>비밀번호가 일치하지 않습니다 다시 입력해주세요.</DoubleCheck>}
+        <Input
           type="text"
           name="nickname"
           placeholder="닉네임"
@@ -127,6 +185,7 @@ const SignUpPage = () => {
           onChange={(e) => setNickname(e.target.value)}
           required
         />
+        {nicknameError && <DoubleCheck>이미 사용 중인 닉네임입니다 다른 닉네임을 사용해주세요.</DoubleCheck>}
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? '가입 중...' : '회원가입'}
         </Button>
