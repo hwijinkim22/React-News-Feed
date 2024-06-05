@@ -72,6 +72,7 @@ const Wrap = styled.div`
     overflow: auto; /* 스크롤 가능하도록 설정(김병준)) */
     max-width: 100%;
     word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정(김병준) */
+    border-radius: 20px;
   }
 
   .detail__post__btns {
@@ -169,7 +170,6 @@ const DetailPage = () => {
       {/* <Link to="/CommitDetail"> CommitDetail </Link> */}
 
       <div className="detail__wrap">
-        <h1>상세페이지</h1>
 
         <div className="detail__post__ul">
           <div className="detail__post__list">
