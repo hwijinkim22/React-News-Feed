@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useReducer } from 'react';
+import { useState, useEffect, useRef, useReducer } from 'react';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
 import useOutsideClick from './useOutsideClick';
@@ -55,7 +55,7 @@ const Input = styled.input`
   font-weight: 600;
 `;
 
-const Modal = ({ close, user, setUser }) => {
+const Modal = ({ close, userName }) => {
   const [name, setName] = useState('');
   const modalRef = useRef(null);
 
@@ -66,30 +66,34 @@ const Modal = ({ close, user, setUser }) => {
   useOutsideClick(modalRef, handleClose);
 
   useEffect(() => {
-    if (user.user_metadata.nickname) {
-      setName(user.user_metadata.nickname);
+    if (userName) {
+      setName(userName);
     }
-  }, [user]);
+  }, [userName]);
 
   const nameEdit = async (e) => {
     e.preventDefault();
-    if (user) {
-      const { error } = await supabase.auth.updateUser({
-        data: { nickname: name }
-      });
-      if (error) {
-        console.error('Error updating user', error);
-      } else {
-        console.log('Updated user');
-        setUser((prev) => ({
-          ...prev,
-          user_metadata: {
-            ...prev.user_metadata,
-            nickname: name
-          }
-        }));
-        close();
+    if (!name) {
+      alert('닉네임을 입력해주세요');
+      return;
+    }
+
+    if (userName) {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError) {
+        console.error('Error fetching user:', authError);
+        return;
       }
+
+      const userId = authData.user.id;
+
+      const { error } = await supabase.from('users').update({ nickname: name }).eq('id', userId);
+
+      if (error) {
+        console.error('Error updating user:', error);
+        return;
+      }
+      close();
     }
   };
 
