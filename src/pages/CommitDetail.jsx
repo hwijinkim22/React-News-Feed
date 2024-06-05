@@ -272,9 +272,9 @@ const CommitDetail = ({users}) => {
   };
 
   // 취소 버튼이 클릭될 때 호출할 함수.
-  // 컨펌창을 띄울 것이고, 사용자가 경고에도 확인을 누르면 test 컴포넌트로 넘깁니다.(메인 뉴스피드 페이지)
   const handleCancel = () => {
-    if (window.confirm('취소를 누르면 작성한 내용을 복구해드릴 수 없어요. 괜찮으시겠어요?')) {
+    const confirmed = window.confirm('취소를 누르면 작성한 내용을 복구해드릴 수 없어요. 괜찮으시겠어요?');
+    if (confirmed) {
       navigate('/');
     }
   };
