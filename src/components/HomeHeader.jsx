@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import homeimage from '../image/homeimage.png';
-import CommitDetail from '../pages/CommitDetail';
 
 const Header = styled.div`
   position: fixed;
@@ -16,7 +15,7 @@ const Header = styled.div`
   justify-content: center;
   align-items: center;
   padding: 0 20px;
-  z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정 */
+  z-index: 1000;
 `;
 
 const HeaderBtns = styled.div`

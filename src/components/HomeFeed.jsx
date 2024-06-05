@@ -65,6 +65,8 @@ const HomePostOverlay = styled.div`
   flex-direction: column;
 `;
 
+const HomePostUserImage = styled.div``;
+
 const HomePostTitle = styled.h5`
   margin: 0;
   font-size: 20px;
@@ -74,13 +76,10 @@ const HomePostTitle = styled.h5`
 `;
 
 const HomePostNickname = styled.h5`
-  margin: 0;
+  margin-top: 10px;
   font-size: 14px;
-`;
-
-const HomePostContent = styled.p`
-  margin: 5px 0 0;
-  font-size: 16px;
+  display: flex;
+  justify-content: center;
 `;
 
 const MoreButton = styled.button`
@@ -127,13 +126,13 @@ const HomeFeed = ({ posts }) => {
     <Container>
       <HomeInput onSearch={handleSearch} />
       <HomeContent>
-        {filterdPosts.slice(0, showAll ? filterdPosts.length : 9).map((post) => (
+        {filterdPosts.slice(0, showAll ? filterdPosts.length : 4).map((post) => (
           <HomePost key={post.id} onClick={() => handleItemSelect(post.id)}>
             <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
             <HomePostOverlay>
+              <HomePostUserImage></HomePostUserImage>
               <HomePostTitle>{post.title}</HomePostTitle>
               <HomePostNickname>{post.nickname}</HomePostNickname>
-              <HomePostContent>{post.content}</HomePostContent>
             </HomePostOverlay>
           </HomePost>
         ))}
@@ -143,6 +142,7 @@ const HomeFeed = ({ posts }) => {
       ) : (
         <MoreButton onClick={() => setShowAll(true)}>더보기</MoreButton>
       )}
+      <Footer />
     </Container>
   );
 };
