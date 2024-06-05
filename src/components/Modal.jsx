@@ -95,7 +95,7 @@ const Modal = ({ close, user, setUser }) => {
 
   const nameChange = (e) => {
     const nameValue = e.target.value;
-    nameValue.length > 8 ? alert('8자까지 입력 가능합니다') : setName(nameValue);
+    nameValue.length > 12 ? alert('12자까지 입력 가능합니다') : setName(nameValue);
   };
 
   return (
