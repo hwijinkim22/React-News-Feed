@@ -122,20 +122,6 @@ const CommitDetail = ({users}) => {
   const navigate = useNavigate(); // 홈으로 넘기기 위한 훅
   const location = useLocation(); // HomeFeed 컴포넌트에서 글 내용을 넘겨받기 위한 훅(edit 함수에서)
   const { id, title, content, user_id } = location.state || {};
-  // console.log('넘겨받은 아이디:', id, '넘겨받은 타이틀:', title, '넘겨받은 컨텐츠:', content, '넘겨받은 유저아이디:', user_id);
-  useEffect(() => {
-    console.log(
-      '넘겨받은 아이디:',
-      id,
-      '넘겨받은 타이틀:',
-      title,
-      '넘겨받은 컨텐츠:',
-      content,
-      '넘겨받은 유저아이디:',
-      user_id
-    );
-  }, [id, title, content, user_id]);
-
   const [postTitle, setPostTitle] = useState(title || ''); // 글 제목(title)을 상태로 관리(test에서 넘겨받은 값)
   const [postContent, setPostContent] = useState(content || ''); // 글 내용(content)을 상태로 관리(test에서 넘겨받은 값)
   const [titleError, setTitleError] = useState(''); // 제목 에러 메시지 띄우기 위해 상태로 관리
@@ -143,6 +129,7 @@ const CommitDetail = ({users}) => {
   const [user, setUser] = useState(null); // 사용자 정보 상태 변수와 상태 변경 함수 지정
   // 글쓰기 페이지가 처음 렌더링 될 때 사용자가 로그인했는지 확인
   const [matchedNickName ,setMatchedNickName] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // 로딩 관리
 
   useEffect(() => {
     const checkUser = async () => {
@@ -194,9 +181,8 @@ const CommitDetail = ({users}) => {
   // 작성 버튼을 눌렀을 때(폼이 제출될 때) 호출할 함수입니다.
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // valid는 유효성 검사를 위한 플래그 변수임. true로 초기화한 이유는 일반적으로는 글을 제대로 쓸 것이기 때문입니다.
-    // supabase 테이블에 넣기 위한 유효성 검사 규칙은 아직 모릅니다.
-    // 저의 편의상 추가한 유효성 검사입니다.
+    setIsLoading(true); // 게시글 작성 버튼 클릭 시 로딩 시작
+    // valid는 유효성 검사를 위한 플래그 변수임. true로 초기화한 이유는 일반적으로는 글을 제대로 쓸 것이기 때문.
     let valid = true;
     const nickname = matchedNickName;
 
@@ -240,6 +226,7 @@ const CommitDetail = ({users}) => {
         }
       }
     }
+    setIsLoading(false); // 게시글 작성 로딩 종료
   };
 
   // Supabase 오류 메시지를 한국어로 번역하는 함수. 오류 케이스를 아직 확인은 안 했습니다.
@@ -310,7 +297,7 @@ const CommitDetail = ({users}) => {
         </EditorContainer>
         {contentError && <ErrorMessage>{contentError}</ErrorMessage>}
         <ButtonGroup>
-          <Button type="submit">등록</Button>
+          <Button type="submit" disabled={isLoading}>등록</Button>
           <CancelButton onClick={handleCancel}>취소</CancelButton>
         </ButtonGroup>
       </Form>
