@@ -118,7 +118,7 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
 `;
 
-const CommitDetail = ({users, setUsers}) => {
+const CommitDetail = ({ users, setUsers }) => {
   const navigate = useNavigate(); // 홈으로 넘기기 위한 훅
   const location = useLocation(); // HomeFeed 컴포넌트에서 글 내용을 넘겨받기 위한 훅(edit 함수에서)
   const { id, title, content, user_id } = location.state || {};
@@ -128,7 +128,7 @@ const CommitDetail = ({users, setUsers}) => {
   const [contentError, setContentError] = useState(''); // 내용 에러 메시지 띄우기 위해 상태로 관리
   const [user, setUser] = useState(null); // 사용자 정보 상태 변수와 상태 변경 함수 지정
   // 글쓰기 페이지가 처음 렌더링 될 때 사용자가 로그인했는지 확인
-  const [matchedNickName ,setMatchedNickName] = useState('');
+  const [matchedNickName, setMatchedNickName] = useState('');
   const [isLoading, setIsLoading] = useState(false); // 로딩 관리
 
   useEffect(() => {
@@ -158,6 +158,14 @@ const CommitDetail = ({users, setUsers}) => {
           console.log('users 테이블에서 이 유저의 닉네임을 못찾았습니다요');
         }
         setUser(user); // 받아온 사용자 정보로 user 상태를 업데이트
+
+        // 사용자의 프로필 사진 URL 가져오기
+        const { data } = supabase.storage.from('profile').getPublicUrl(user.user_metadata.avatar_url);
+        setUser(prevUser => ({
+          ...prevUser,
+          profilePicUrl: data.publicUrl, // 프로필 사진 URL 저장
+        }));
+
         // 유저 정보가 없으면 로그인 페이지로 넘깁니다.
       } else {
         navigate('/login');

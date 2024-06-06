@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
 
@@ -87,7 +87,7 @@ const CommentsSection = ({ postId, users }) => {
     const [newComment, setNewComment] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const fetchComments = async () => {
             try {
                 const { data, error } = await supabase
