@@ -62,6 +62,10 @@ const CommentsWrapper = styled.div`
   }
 `;
 
+const EmptySpace = styled.div`
+  height: 100px;
+`
+
 const CommentsSection = ({ postId, users }) => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
@@ -155,6 +159,7 @@ const CommentsSection = ({ postId, users }) => {
     };
 
     return (
+        <>
         <CommentsWrapper>
             <h1>댓글</h1>
             <ul className="comments__list">
@@ -178,6 +183,8 @@ const CommentsSection = ({ postId, users }) => {
                 <button type="submit" style={{ backgroundColor: "#343434" }}>댓글 작성</button>
             </form>
         </CommentsWrapper>
+        <EmptySpace/>
+        </>
     );
 };
 
