@@ -28,7 +28,7 @@ const HomePost = styled.div`
   width: 500px;
   height: 500px;
   margin: 10px;
-  border: 2px solid black;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -36,8 +36,7 @@ const HomePost = styled.div`
     transform 0.3s,
     box-shadow 0.3s;
   &:hover {
-    transform: scale(1.05);
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
   }
 `;
 
@@ -50,6 +49,8 @@ const HomePostImage = styled.div`
   position: absolute;
   top: 0;
   left: 0;
+
+  padding: 0 20px;
 `;
 
 const HomePostOverlay = styled.div`
