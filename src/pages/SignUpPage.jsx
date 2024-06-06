@@ -82,6 +82,7 @@ const SignUpPage = () => {
         .eq('email', email)
         .single();
 
+
       const {data: existNickname } = await supabase
       .from('users')
       .select('nickname')
