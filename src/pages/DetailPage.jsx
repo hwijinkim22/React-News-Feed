@@ -75,7 +75,6 @@ const Wrap = styled.div`
     max-width: 100%;
     word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정 */
     border-radius: 20px;
-
     margin-bottom: 20px;
   }
 
@@ -96,6 +95,20 @@ const Wrap = styled.div`
       margin-left: 10px;
     }
   }
+
+  .post__solve_status {
+    padding: 0 20px;
+    width: 100px;
+    height: 35px;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-right: 10px;
+    background-color: ${(props) =>
+      props.solved ? 'rgba(144, 238, 144, 0.5)' : 'rgba(255, 182, 193, 0.5)'};
+    color: white;
+  }
 `;
 
 const DetailPage = () => {
@@ -105,6 +118,8 @@ const DetailPage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [users, setUsers] = useState();
   const [profilePic, setProfilePic] = useState('');
+  const [lastClicked, setLastClicked] = useState(null);
+  const [isSolved, setIsSolved] = useState(item ? item.isSolved : false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -187,6 +202,31 @@ const DetailPage = () => {
     }
   };
 
+  const handleSolveStatus = async () => {
+    const now = new Date().getTime();
+
+    if (lastClicked && now - lastClicked < 5000) {
+      alert('진정하세요! 버튼을 너무 자주 누르고 있어요.');
+      return;
+    }
+
+    setLastClicked(now);
+
+    const newStatus = !isSolved;
+    const { error } = await supabase
+      .from('posts')
+      .update({ isSolved: newStatus })
+      .eq('id', item.id);
+
+    if (error) {
+      console.error('Error updating solve status:', error.message);
+      return;
+    }
+
+    setIsSolved(newStatus);
+    item.isSolved = newStatus; // 아이템 상태 업데이트
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -218,6 +258,11 @@ const DetailPage = () => {
           </div>
 
           <div className="detail__post__btns">
+            {currentUser && currentUser.id === item.user_id && (
+              <button className="post__solve_status" solved={isSolved} onClick={handleSolveStatus}>
+                {isSolved ? '해결완료' : '해결중'}
+              </button>
+            )}
             <button className="post__btn--modify" onClick={() => handleEdit(item)}>
               수정
             </button>
