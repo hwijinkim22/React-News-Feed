@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
 import CommentsSection from '../components/CommentsSection';
 
@@ -43,9 +42,11 @@ const Wrap = styled.div`
       }
 
       > img {
-        width: 340px;
+        width: 140px;
         height: 140px;
         margin-right: 50px;
+        border-radius: 50%; /* 동그랗게 설정 */
+        object-fit: cover; /* 이미지 크기 조절 */
       }
 
       .post__title {
@@ -70,9 +71,9 @@ const Wrap = styled.div`
     border: 1px solid #000000;
     min-height: 800px;
     padding: 40px;
-    overflow: auto; /* 스크롤 가능하도록 설정(김병준)) */
+    overflow: auto; /* 스크롤 가능하도록 설정 */
     max-width: 100%;
-    word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정(김병준) */
+    word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정 */
     border-radius: 20px;
   }
 
@@ -96,12 +97,12 @@ const Wrap = styled.div`
 `;
 
 const DetailPage = () => {
-  // detailpage 기능 추가 (김병준)
   const location = useLocation();
   const navigate = useNavigate();
   const { item } = location.state || {};
   const [currentUser, setCurrentUser] = useState(null);
   const [users, setUsers] = useState();
+  const [profilePic, setProfilePic] = useState('');
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -118,19 +119,35 @@ const DetailPage = () => {
     };
 
     fetchUsers();
-  }, []); // 컴포넌트가 마운트될 때 users 데이터를 가져옴
+  }, []);
 
-  console.log('아이템 홈에서 넘겨 받은 내용:', item);
+  useEffect(() => {
+    if (item) {
+      const fetchUserProfile = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('users')
+            .select('profilepic')
+            .eq('id', item.user_id)
+            .single();
 
-  if (!item) {
-    return <p>Loading...</p>;
-  }
+          if (error) {
+            throw error;
+          }
+
+          setProfilePic(data.profilepic || 'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg');
+        } catch (error) {
+          console.error('Error fetching user profile:', error.message);
+        }
+      };
+
+      fetchUserProfile();
+    }
+  }, [item]);
 
   useEffect(() => {
     const getUser = async () => {
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user);
     };
 
@@ -167,7 +184,6 @@ const DetailPage = () => {
     }
   };
 
-  // 글쓴 시각 포매팅 함수 (김병준)
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -180,15 +196,16 @@ const DetailPage = () => {
     return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분 ${seconds}초`;
   };
 
+  if (!item) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <Wrap>
-      {/* <Link to="/CommitDetail"> CommitDetail </Link> */}
-
       <div className="detail__wrap">
-
         <div className="detail__post__ul">
           <div className="detail__post__list">
-            <img src="https://placehold.co/340x140" />
+            <img src={profilePic} alt="Profile" />
 
             <div className="post__list__content">
               <p className="post__title">{item.title}</p>
@@ -211,7 +228,6 @@ const DetailPage = () => {
           <p dangerouslySetInnerHTML={{ __html: item.content }} />
         </div>
         <CommentsSection postId={item.id} users={users} />
-
       </div>
     </Wrap>
   );
