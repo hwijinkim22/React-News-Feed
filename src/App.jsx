@@ -24,7 +24,7 @@ const App = () => {
       if (error) {
         throw error;
       }
-      setSignIn(false);
+      dispatch(setSignIn(false));
     } catch (error) {
       console.error('로그아웃 오류 발생', error.message);
     }
