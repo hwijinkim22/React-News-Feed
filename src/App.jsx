@@ -1,22 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import GlobalStyles from './Globalstyles';
 import { FetchData, FetchUsers } from './components/FetchData';
 import Router from './shared/Router';
 import supabase from './supabaseClient';
+import { setPosts, setUsers, setSignIn } from './store/slice/newsFeedSlice';
+import { useDispatch } from 'react-redux';
 
 const App = () => {
-  const [posts, setPosts] = useState([]);
-  const [signIn, setSignIn] = useState(false);
-  const [users, setUsers] = useState([]);
+  const dispatch = useDispatch();
 
   const handleDataFetch = (data) => {
-    setPosts(data);
+    dispatch(setPosts(data));
   };
 
   const handleUsersFetch = (data) => {
-    setUsers(data)
+    dispatch(setUsers(data));
   };
-
 
   const signOut = async (e) => {
     e.preventDefault();
@@ -41,12 +40,12 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await supabase.from('posts').select();
-      setPosts(data);
+      dispatch(setPosts(data));
     };
     const fetchUsers = async () => {
       const { data } = await supabase.from('users').select();
-      setUsers(data);
-    }
+      dispatch(setUsers(data));
+    };
 
     fetchData();
     fetchUsers();
@@ -64,9 +63,9 @@ const App = () => {
   return (
     <>
       <GlobalStyles />
-      <FetchData onDataFetch={handleDataFetch}/>
-      <FetchUsers handleUsersFetch={handleUsersFetch}/>
-      <Router posts={posts} setPosts={setPosts} users={users} setUsers={setUsers} signIn={signIn} setSignIn={setSignIn} signOut={signOut}/>
+      <FetchData onDataFetch={handleDataFetch} />
+      <FetchUsers handleUsersFetch={handleUsersFetch} />
+      <Router signOut={signOut} />
     </>
   );
 };

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSignIn } from './../store/slice/newsFeedSlice';
 
 const Container = styled.div`
   display: flex;
@@ -55,10 +57,12 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vemVrZ2pnZWluZGd5dWxmYXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTcxNDI1MDEsImV4cCI6MjAzMjcxODUwMX0.Wu1dt8WSMSro-_ieydr-ghmfcKPr568Ovm6dfzgrB00'
 );
 
-const LoginPage = ({ signIn, setSignIn, signOut }) => {
+const LoginPage = ({ signOut }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const signIn = useSelector((state) => state.newsFeed.signIn);
 
   const signInWithEmailPassword = async (e) => {
     e.preventDefault();
@@ -72,7 +76,7 @@ const LoginPage = ({ signIn, setSignIn, signOut }) => {
       }
       console.log(data);
       if (data) {
-        setSignIn(true);
+        dispatch(setSignIn(true));
         alert(`${data.user.user_metadata.nickname}님 환영합니다.`);
         navigate('/');
       } else {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeInput from './HomeInput';
 import Footer from './Footer';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
   display: flex;
@@ -102,10 +103,11 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
-const HomeFeed = ({ posts }) => {
+const HomeFeed = () => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
+  const posts = useSelector((state) => state.newsFeed.posts);
 
   // HomeFeed 컴포넌트에서 DetailPage 컴포넌트로 item을 id로 넘기는 함수
   const handleItemSelect = (id) => {

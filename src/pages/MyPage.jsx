@@ -81,7 +81,7 @@ const MyPage = () => {
   const [nameModal, setNameModal] = useState(false);
   const navigate = useNavigate();
 
-const getUserNickname = useCallback(async () => {
+  const getUserNickname = useCallback(async () => {
     const { data: userNickName, error: userNickNameError } = await supabase
       .from('users')
       .select('nickname')
@@ -93,7 +93,6 @@ const getUserNickname = useCallback(async () => {
       setUserName(userNickName.nickname);
     }
   }, [user]);
-
 
   useEffect(() => {
     // 사용자 정보 가져오기

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import homeimage from '../image/homeimage.png';
+import { useSelector } from 'react-redux';
 
 const Header = styled.div`
   position: fixed;
@@ -48,8 +49,9 @@ const HomeImage = styled.img`
   display: ${(props) => (props.hide === 'true' ? 'none' : 'flex')};
 `;
 
-const HomeHeader = ({ signIn, signOut }) => {
+const HomeHeader = ({ signOut }) => {
   const [hideButtons, setHideButtons] = useState(false);
+  const signIn = useSelector((state) => state.newsFeed.signIn);
 
   const checkZoom = () => {
     const zoomLevel = Math.round((window.outerWidth / window.innerWidth) * 100);
