@@ -71,28 +71,20 @@ const SignUpPage = () => {
     setNicknameError(false);
     setMismatchPassword(false);
 
-    if(password !== confirmPassword) {
+    if (password !== confirmPassword) {
       setMismatchPassword(true);
       setIsSubmitting(false);
     }
     try {
-      const { data: existEmail } = await supabase
-        .from('users')
-        .select('email')
-        .eq('email', email)
-        .single();
+      const { data: existEmail } = await supabase.from('users').select('email').eq('email', email).single();
 
-      const {data: existNickname } = await supabase
-      .from('users')
-      .select('nickname')
-      .eq('nickname', nickname)
-      .single();
+      const { data: existNickname } = await supabase.from('users').select('nickname').eq('nickname', nickname).single();
 
-      if(existEmail || existNickname) {
-        if(existEmail) {
+      if (existEmail || existNickname) {
+        if (existEmail) {
           setEmailError(true);
         }
-        if(existNickname) {
+        if (existNickname) {
           setNicknameError(true);
         }
         setIsSubmitting(false);
@@ -101,21 +93,19 @@ const SignUpPage = () => {
 
       const { error } = await supabase.auth.signUp({
         email,
-        password,
+        password
       });
 
       if (error) {
         throw error;
       }
 
-      const { error: insertError } = await supabase
-      .from('users')
-      .insert({nickname, email})
+      const { error: insertError } = await supabase.from('users').insert({ nickname, email });
 
-      if(insertError) {
+      if (insertError) {
         throw insertError;
       }
-      
+
       navigate('/');
       alert(`회원가입이 완료되었습니다. ${nickname}님 환영합니다!`);
     } catch (error) {
@@ -124,7 +114,6 @@ const SignUpPage = () => {
       setIsSubmitting(false);
     }
   };
-
 
   const handleSignUp = async () => {
     try {

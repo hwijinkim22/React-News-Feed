@@ -3,11 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeInput from './HomeInput';
 import Footer from './Footer';
-<<<<<<< HEAD
 import { useSelector } from 'react-redux';
-=======
 import supabase from '../supabaseClient';
->>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
 
 const Container = styled.div`
   display: flex;
@@ -122,11 +119,9 @@ const HomeFeed = () => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
-<<<<<<< HEAD
-  const posts = useSelector((state) => state.newsFeed.posts);
-=======
   const [commentCounts, setCommentCounts] = useState({});
->>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
+
+  const posts = useSelector((state) => state.newsFeed.posts);
 
   // HomeFeed 컴포넌트에서 DetailPage 컴포넌트로 item을 id로 넘기는 함수
   const handleItemSelect = (id) => {
@@ -138,10 +133,7 @@ const HomeFeed = () => {
   const fetchCommentCounts = async () => {
     const counts = {};
     for (const post of posts) {
-      const { data: comments, error } = await supabase
-        .from('comments')
-        .select('id')
-        .eq('post_id', post.id);
+      const { data: comments, error } = await supabase.from('comments').select('id').eq('post_id', post.id);
 
       if (error) {
         console.error('Error fetching comments:', error);

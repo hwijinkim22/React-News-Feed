@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
-import { useSelector } from 'react-redux';
 
 const CommentsWrapper = styled.div`
   width: 100%;
@@ -79,72 +78,22 @@ const CommentsWrapper = styled.div`
   }
 `;
 
-<<<<<<< HEAD
-const CommentsSection = ({ postId }) => {
+const EmptySpace = styled.div`
+  height: 100px;
+`;
+
+const CommentsSection = ({ postId, users }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
-  const users = useSelector((state) => state.newsFeed.users);
-=======
-const EmptySpace = styled.div`
-  height: 100px;
-`
-
-const CommentsSection = ({ postId, users }) => {
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState('');
-    const [currentUser, setCurrentUser] = useState(null);
->>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const { data, error } = await supabase.from('comments').select('*').eq('post_id', postId);
 
-<<<<<<< HEAD
         if (error) {
           throw error;
-=======
-                if (error) {
-                    throw error;
-                }
-
-                console.log('Fetched comments:', data);
-                setComments(data || []); // null일 경우 빈 배열로 설정
-            } catch (error) {
-                console.error('Error fetching comments:', error.message);
-            }
-        };
-
-        fetchComments();
-    }, [postId]);
-
-    useEffect(() => {
-        const getUser = async () => {
-            try {
-                const { data: { user }, error } = await supabase.auth.getUser();
-
-                if (error) {
-                    throw error;
-                }
-
-                console.log('Fetched user:', user);
-                setCurrentUser(user);
-            } catch (error) {
-                console.error('Error fetching user:', error.message);
-            }
-        };
-
-        getUser();
-    }, []);
-
-    const handleCommentSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!currentUser) {
-            alert('어허~ 돌아가~ 로그인 안 하면 댓글을 못 달아요!');
-            return;
->>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
         }
 
         console.log('Fetched comments:', data);
@@ -154,26 +103,8 @@ const CommentsSection = ({ postId, users }) => {
       }
     };
 
-<<<<<<< HEAD
     fetchComments();
   }, [postId]);
-=======
-    return (
-        <>
-            <CommentsWrapper>
-                <div className="comments__header">
-                    <h1>댓글</h1>
-                    <span>{comments.length} 개</span>
-                </div>            <ul className="comments__list">
-                    {comments.map((comment) => (
-                        <li key={comment.id} className="comment__item">
-                            <p className="comment__author">{comment.nickname || comment.user_id}</p>
-                            <p className="comment__date">{new Date(comment.created_at).toLocaleString()}</p>
-                            <p className="comment__text">{comment.comment}</p>
-                        </li>
-                    ))}
-                </ul>
->>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
 
   useEffect(() => {
     const getUser = async () => {
@@ -183,7 +114,6 @@ const CommentsSection = ({ postId, users }) => {
           error
         } = await supabase.auth.getUser();
 
-<<<<<<< HEAD
         if (error) {
           throw error;
         }
@@ -202,7 +132,7 @@ const CommentsSection = ({ postId, users }) => {
     e.preventDefault();
 
     if (!currentUser) {
-      alert('로그인이 필요합니다.');
+      alert('어허~ 돌아가~ 로그인 안 하면 댓글을 못 달아요!');
       return;
     }
 
@@ -240,46 +170,36 @@ const CommentsSection = ({ postId, users }) => {
   };
 
   return (
-    <CommentsWrapper>
-      <h1>댓글</h1>
-      <ul className="comments__list">
-        {comments.map((comment) => (
-          <li key={comment.id} className="comment__item">
-            <p className="comment__author">{comment.nickname || comment.user_id}</p>
-            <p className="comment__date">{new Date(comment.created_at).toLocaleString()}</p>
-            <p className="comment__text">{comment.comment}</p>
-          </li>
-        ))}
-      </ul>
-
-      <form className="comment__form" onSubmit={handleCommentSubmit}>
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          rows="4"
-          placeholder="그런 말이 있지요, 가는 말이 고와야 오는 말이 곱다는 말..."
-        />
-        <button type="submit" style={{ backgroundColor: '#343434' }}>
-          댓글 작성
-        </button>
-      </form>
-    </CommentsWrapper>
+    <>
+      <CommentsWrapper>
+        <div className="comments__header">
+          <h1>댓글</h1>
+          <span>{comments.length} 개</span>
+        </div>{' '}
+        <ul className="comments__list">
+          {comments.map((comment) => (
+            <li key={comment.id} className="comment__item">
+              <p className="comment__author">{comment.nickname || comment.user_id}</p>
+              <p className="comment__date">{new Date(comment.created_at).toLocaleString()}</p>
+              <p className="comment__text">{comment.comment}</p>
+            </li>
+          ))}
+        </ul>
+        <form className="comment__form" onSubmit={handleCommentSubmit}>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            rows="4"
+            placeholder="그런 말이 있지요, 가는 말이 고와야 오는 말이 곱다는 말..."
+          />
+          <button type="submit" style={{ backgroundColor: '#343434' }}>
+            댓글 작성
+          </button>
+        </form>
+      </CommentsWrapper>
+      <EmptySpace />
+    </>
   );
-=======
-                <form className="comment__form" onSubmit={handleCommentSubmit}>
-                    <textarea
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        rows="4"
-                        placeholder="그런 말이 있지요, 가는 말이 고와야 오는 말이 곱다는 말..."
-                    />
-                    <button type="submit" style={{ backgroundColor: "#343434" }}>댓글 작성</button>
-                </form>
-            </CommentsWrapper>
-            <EmptySpace />
-        </>
-    );
->>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
 };
 
 export default CommentsSection;

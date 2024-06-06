@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useReducer } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
 import useOutsideClick from './useOutsideClick';
