@@ -61,21 +61,90 @@ const CommentsWrapper = styled.div`
       }
     }
   }
+
+  .comments__header {
+    display: flex;
+    align-items: center;
+    align-items: baseline; /* 댓글과 댓글 개수 라인 맞추기 위함 */
+
+    h1 {
+      margin-right: 10px;
+    }
+
+    span {
+      font-size: 15px;
+      color: black;
+      vertical-align: text-bottom;
+    }
+  }
 `;
 
+<<<<<<< HEAD
 const CommentsSection = ({ postId }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const users = useSelector((state) => state.newsFeed.users);
+=======
+const EmptySpace = styled.div`
+  height: 100px;
+`
+
+const CommentsSection = ({ postId, users }) => {
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+    const [currentUser, setCurrentUser] = useState(null);
+>>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const { data, error } = await supabase.from('comments').select('*').eq('post_id', postId);
 
+<<<<<<< HEAD
         if (error) {
           throw error;
+=======
+                if (error) {
+                    throw error;
+                }
+
+                console.log('Fetched comments:', data);
+                setComments(data || []); // null일 경우 빈 배열로 설정
+            } catch (error) {
+                console.error('Error fetching comments:', error.message);
+            }
+        };
+
+        fetchComments();
+    }, [postId]);
+
+    useEffect(() => {
+        const getUser = async () => {
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+
+                if (error) {
+                    throw error;
+                }
+
+                console.log('Fetched user:', user);
+                setCurrentUser(user);
+            } catch (error) {
+                console.error('Error fetching user:', error.message);
+            }
+        };
+
+        getUser();
+    }, []);
+
+    const handleCommentSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!currentUser) {
+            alert('어허~ 돌아가~ 로그인 안 하면 댓글을 못 달아요!');
+            return;
+>>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
         }
 
         console.log('Fetched comments:', data);
@@ -85,8 +154,26 @@ const CommentsSection = ({ postId }) => {
       }
     };
 
+<<<<<<< HEAD
     fetchComments();
   }, [postId]);
+=======
+    return (
+        <>
+            <CommentsWrapper>
+                <div className="comments__header">
+                    <h1>댓글</h1>
+                    <span>{comments.length} 개</span>
+                </div>            <ul className="comments__list">
+                    {comments.map((comment) => (
+                        <li key={comment.id} className="comment__item">
+                            <p className="comment__author">{comment.nickname || comment.user_id}</p>
+                            <p className="comment__date">{new Date(comment.created_at).toLocaleString()}</p>
+                            <p className="comment__text">{comment.comment}</p>
+                        </li>
+                    ))}
+                </ul>
+>>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
 
   useEffect(() => {
     const getUser = async () => {
@@ -96,6 +183,7 @@ const CommentsSection = ({ postId }) => {
           error
         } = await supabase.auth.getUser();
 
+<<<<<<< HEAD
         if (error) {
           throw error;
         }
@@ -177,6 +265,21 @@ const CommentsSection = ({ postId }) => {
       </form>
     </CommentsWrapper>
   );
+=======
+                <form className="comment__form" onSubmit={handleCommentSubmit}>
+                    <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        rows="4"
+                        placeholder="그런 말이 있지요, 가는 말이 고와야 오는 말이 곱다는 말..."
+                    />
+                    <button type="submit" style={{ backgroundColor: "#343434" }}>댓글 작성</button>
+                </form>
+            </CommentsWrapper>
+            <EmptySpace />
+        </>
+    );
+>>>>>>> 29ff509cece941782f3fb50a90f5f0177fe40489
 };
 
 export default CommentsSection;
