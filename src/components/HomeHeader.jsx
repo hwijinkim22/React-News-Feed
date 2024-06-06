@@ -29,7 +29,6 @@ const HeaderBtn = styled.button`
   /* margin-right: 50px; */
   padding: 10px 20px;
   font-size: 1rem;
-  color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -43,6 +42,7 @@ const HeaderBtn = styled.button`
   transition: 0.5s;
   background-size: 200% auto;
   color: white;
+  font-weight: bold;
   border-radius: 10px;
 
   &:hover {
