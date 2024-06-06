@@ -1,6 +1,7 @@
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
+import { FaEdit, FaTrash } from 'react-icons/fa'; // 아이콘 추가
 
 const CommentsWrapper = styled.div`
   width: 100%;
@@ -18,9 +19,19 @@ const CommentsWrapper = styled.div`
       padding: 10px;
       border: 1px solid black;
       border-radius: 20px;
+      position: relative; /* 수정 및 삭제 아이콘 배치용 */
 
       .comment__author {
         font-weight: bold;
+        display: flex;
+        align-items: center;
+      }
+
+      .comment__author img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
       }
 
       .comment__date {
@@ -30,6 +41,42 @@ const CommentsWrapper = styled.div`
 
       .comment__text {
         margin-top: 5px;
+      }
+
+      .comment__actions {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        display: flex;
+
+        .action__icon {
+          margin-left: 10px;
+          cursor: pointer;
+        }
+      }
+
+      .edit__textarea {
+        width: 90%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid black;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .edit__button {
+        margin-top: 10px;
+        margin-left: 5px;
+        padding: 10px 20px;
+        background-color: rgb(52, 52, 52);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #0056b3;
+        }
       }
     }
   }
@@ -86,6 +133,9 @@ const CommentsSection = ({ postId, users }) => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editedCommentText, setEditedCommentText] = useState('');
+    const [userProfiles, setUserProfiles] = useState({});
 
     useLayoutEffect(() => {
         const fetchComments = async () => {
@@ -100,7 +150,7 @@ const CommentsSection = ({ postId, users }) => {
                 }
 
                 console.log('Fetched comments:', data);
-                setComments(data || []); // null일 경우 빈 배열로 설정
+                setComments(data || []);
             } catch (error) {
                 console.error('Error fetching comments:', error.message);
             }
@@ -128,6 +178,31 @@ const CommentsSection = ({ postId, users }) => {
         getUser();
     }, []);
 
+    useEffect(() => {
+        const fetchUserProfiles = async () => {
+            const profiles = {};
+            for (const comment of comments) {
+                if (!profiles[comment.user_id]) {
+                    const { data: user, error } = await supabase
+                        .from('users')
+                        .select('profilepic')
+                        .eq('id', comment.user_id)
+                        .single();
+
+                    if (error) {
+                        console.error('Error fetching user profile:', error);
+                        continue;
+                    }
+
+                    profiles[comment.user_id] = user.profilepic || 'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg';
+                }
+            }
+            setUserProfiles(profiles);
+        };
+
+        fetchUserProfiles();
+    }, [comments]);
+
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
 
@@ -136,7 +211,6 @@ const CommentsSection = ({ postId, users }) => {
             return;
         }
 
-        // users 배열이 정의되었는지 확인
         const nickname = users ? (users.find(u => u.id === currentUser.id)?.nickname || '') : '';
 
         try {
@@ -147,7 +221,7 @@ const CommentsSection = ({ postId, users }) => {
                         comment: newComment,
                         user_id: currentUser.id,
                         post_id: postId,
-                        nickname: nickname // 닉네임 추가
+                        nickname: nickname
                     }
                 ]);
 
@@ -158,7 +232,6 @@ const CommentsSection = ({ postId, users }) => {
             console.log('이 댓글이 등록되었습니다.');
             setNewComment('');
 
-            // 새 댓글 등록 후 댓글 목록을 다시 가져옴
             const { data, error: fetchError } = await supabase
                 .from('comments')
                 .select('*')
@@ -174,22 +247,112 @@ const CommentsSection = ({ postId, users }) => {
         }
     };
 
+    const handleEditComment = (commentId, currentText) => {
+        setEditingCommentId(commentId);
+        setEditedCommentText(currentText);
+    };
+
+    const handleUpdateComment = async (commentId) => {
+        try {
+            const { error } = await supabase
+                .from('comments')
+                .update({ comment: editedCommentText })
+                .eq('id', commentId);
+
+            if (error) {
+                throw error;
+            }
+
+            console.log('댓글이 수정되었습니다.');
+            setEditingCommentId(null);
+            setEditedCommentText('');
+
+            const { data, error: fetchError } = await supabase
+                .from('comments')
+                .select('*')
+                .eq('post_id', postId);
+
+            if (fetchError) {
+                throw fetchError;
+            }
+
+            setComments(data || []);
+        } catch (error) {
+            console.error('댓글 수정 에러났어요:', error.message);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        const confirmed = window.confirm('정말 삭제할까요?');
+        if (!confirmed) {
+            return; // 취소를 누르면 함수 종료
+        }
+
+        try {
+            const { error } = await supabase
+                .from('comments')
+                .delete()
+                .eq('id', commentId);
+
+            if (error) {
+                throw error;
+            }
+
+            alert('요청하신 대로 삭제되었어요.'); // 삭제 후 알림
+
+            console.log('댓글이 삭제되었습니다.');
+
+            const { data, error: fetchError } = await supabase
+                .from('comments')
+                .select('*')
+                .eq('post_id', postId);
+
+            if (fetchError) {
+                throw fetchError;
+            }
+
+            setComments(data || []);
+        } catch (error) {
+            console.error('댓글 삭제 에러났어요:', error.message);
+        }
+    };
+
     return (
         <>
             <CommentsWrapper>
                 <div className="comments__header">
                     <h1>댓글</h1>
                     <span>{comments.length} 개</span>
-                </div>            <ul className="comments__list">
+                </div>
+                <ul className="comments__list">
                     {comments.map((comment) => (
                         <li key={comment.id} className="comment__item">
-                            <p className="comment__author">{comment.nickname || comment.user_id}</p>
+                            <p className="comment__author">
+                                <img src={userProfiles[comment.user_id]} alt="User Avatar" />
+                                {comment.nickname || comment.user_id}
+                            </p>
                             <p className="comment__date">{new Date(comment.created_at).toLocaleString()}</p>
-                            <p className="comment__text">{comment.comment}</p>
+                            {editingCommentId === comment.id ? (
+                                <>
+                                    <textarea
+                                        className="edit__textarea"
+                                        value={editedCommentText}
+                                        onChange={(e) => setEditedCommentText(e.target.value)}
+                                    />
+                                    <button className="edit__button" onClick={() => handleUpdateComment(comment.id)}>수정 완료</button>
+                                </>
+                            ) : (
+                                <p className="comment__text">{comment.comment}</p>
+                            )}
+                            {currentUser && currentUser.id === comment.user_id && editingCommentId !== comment.id && (
+                                <div className="comment__actions">
+                                    <FaEdit className="action__icon" onClick={() => handleEditComment(comment.id, comment.comment)} />
+                                    <FaTrash className="action__icon" onClick={() => handleDeleteComment(comment.id)} />
+                                </div>
+                            )}
                         </li>
                     ))}
                 </ul>
-
 
                 <form className="comment__form" onSubmit={handleCommentSubmit}>
                     <textarea
