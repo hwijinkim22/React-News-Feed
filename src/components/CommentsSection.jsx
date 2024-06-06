@@ -60,6 +60,22 @@ const CommentsWrapper = styled.div`
       }
     }
   }
+
+  .comments__header {
+    display: flex;
+    align-items: center;
+    align-items: baseline; /* 댓글과 댓글 개수 라인 맞추기 위함 */
+
+    h1 {
+      margin-right: 10px;
+    }
+
+    span {
+      font-size: 15px;
+      color: black;
+      vertical-align: text-bottom;
+    }
+  }
 `;
 
 const EmptySpace = styled.div`
@@ -160,30 +176,32 @@ const CommentsSection = ({ postId, users }) => {
 
     return (
         <>
-        <CommentsWrapper>
-            <h1>댓글</h1>
-            <ul className="comments__list">
-                {comments.map((comment) => (
-                    <li key={comment.id} className="comment__item">
-                        <p className="comment__author">{comment.nickname || comment.user_id}</p>
-                        <p className="comment__date">{new Date(comment.created_at).toLocaleString()}</p>
-                        <p className="comment__text">{comment.comment}</p>
-                    </li>
-                ))}
-            </ul>
+            <CommentsWrapper>
+                <div className="comments__header">
+                    <h1>댓글</h1>
+                    <span>{comments.length} 개</span>
+                </div>            <ul className="comments__list">
+                    {comments.map((comment) => (
+                        <li key={comment.id} className="comment__item">
+                            <p className="comment__author">{comment.nickname || comment.user_id}</p>
+                            <p className="comment__date">{new Date(comment.created_at).toLocaleString()}</p>
+                            <p className="comment__text">{comment.comment}</p>
+                        </li>
+                    ))}
+                </ul>
 
 
-            <form className="comment__form" onSubmit={handleCommentSubmit}>
-                <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    rows="4"
-                    placeholder="그런 말이 있지요, 가는 말이 고와야 오는 말이 곱다는 말..."
-                />
-                <button type="submit" style={{ backgroundColor: "#343434" }}>댓글 작성</button>
-            </form>
-        </CommentsWrapper>
-        <EmptySpace/>
+                <form className="comment__form" onSubmit={handleCommentSubmit}>
+                    <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        rows="4"
+                        placeholder="그런 말이 있지요, 가는 말이 고와야 오는 말이 곱다는 말..."
+                    />
+                    <button type="submit" style={{ backgroundColor: "#343434" }}>댓글 작성</button>
+                </form>
+            </CommentsWrapper>
+            <EmptySpace />
         </>
     );
 };
