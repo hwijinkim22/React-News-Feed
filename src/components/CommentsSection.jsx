@@ -247,6 +247,11 @@ const CommentsSection = ({ postId, users }) => {
     };
 
     const handleDeleteComment = async (commentId) => {
+        const confirmed = window.confirm('정말 삭제할까요?');
+        if (!confirmed) {
+            return; // 취소를 누르면 함수 종료
+        }
+
         try {
             const { error } = await supabase
                 .from('comments')
@@ -256,6 +261,8 @@ const CommentsSection = ({ postId, users }) => {
             if (error) {
                 throw error;
             }
+
+            alert('요청하신 대로 삭제되었어요.'); // 삭제 후 알림
 
             console.log('댓글이 삭제되었습니다.');
 
