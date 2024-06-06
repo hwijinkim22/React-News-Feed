@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeInput from './HomeInput';
 import Footer from './Footer';
+import supabase from '../supabaseClient';
 
 const Container = styled.div`
   display: flex;
@@ -82,6 +83,17 @@ const HomePostNickname = styled.h5`
   justify-content: center;
 `;
 
+const HomePostCommentCount = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+`;
+
 const MoreButton = styled.button`
   margin-top: 5px;
   padding: 10px 20px;
@@ -106,12 +118,35 @@ const HomeFeed = ({ posts }) => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
+  const [commentCounts, setCommentCounts] = useState({});
 
   // HomeFeed 컴포넌트에서 DetailPage 컴포넌트로 item을 id로 넘기는 함수
   const handleItemSelect = (id) => {
     const item = posts.find((item) => item.id === id);
     navigate('/detailpage', { state: { item } });
   };
+
+  // 각 게시물의 댓글 수를 불러오는 함수
+  const fetchCommentCounts = async () => {
+    const counts = {};
+    for (const post of posts) {
+      const { data: comments, error } = await supabase
+        .from('comments')
+        .select('id')
+        .eq('post_id', post.id);
+
+      if (error) {
+        console.error('Error fetching comments:', error);
+        continue;
+      }
+      counts[post.id] = comments.length;
+    }
+    setCommentCounts(counts);
+  };
+
+  useEffect(() => {
+    fetchCommentCounts();
+  }, [posts]);
 
   const handleSearch = (feed) => {
     setSearchFeed(feed);
@@ -129,6 +164,7 @@ const HomeFeed = ({ posts }) => {
         {filterdPosts.slice(0, showAll ? filterdPosts.length : 4).map((post) => (
           <HomePost key={post.id} onClick={() => handleItemSelect(post.id)}>
             <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
+            <HomePostCommentCount>댓글 {commentCounts[post.id] || 0} 개</HomePostCommentCount>
             <HomePostOverlay>
               <HomePostUserImage></HomePostUserImage>
               <HomePostTitle>{post.title}</HomePostTitle>

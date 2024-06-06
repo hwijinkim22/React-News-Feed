@@ -8,6 +8,11 @@ import Test from '../components/Test';
 import LoginPage from '../pages/LoginPage';
 import SignUpPage from '../pages/SignUpPage';
 import HomeHeader from '../components/HomeHeader';
+import styled from 'styled-components';
+
+const EmptySpace = styled.div`
+  height: 100px;
+`
 
 const Router = ({ posts, setPosts, users, setUsers, comments, signIn, setSignIn, signOut }) => {
   return (
@@ -17,11 +22,12 @@ const Router = ({ posts, setPosts, users, setUsers, comments, signIn, setSignIn,
         <Route path="/" element={<Home posts={posts} setPosts={setPosts} users={users} />} />
         <Route path="/mypage" element={signIn ? <MyPage /> : <Navigate to="/login" />} />
         <Route path="/commitdetail" element={signIn ? <CommitDetail users={users} setUsers={setUsers}/> : <Navigate to="/login" />} />
-        <Route path="/detailpage" element={signIn ? <DetailPage /> : <Navigate to="/login" />} />
+        <Route path="/detailpage" element={<DetailPage />} />
         <Route path="/test" element={<Test posts={posts} comments={comments} />} />
         <Route path="/login" element={<LoginPage signIn={signIn} setSignIn={setSignIn} signOut={signOut} />} />
         <Route path="/signup" element={<SignUpPage />} />
       </Routes>
+      <EmptySpace/>
     </BrowserRouter>
   );
 };
