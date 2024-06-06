@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useReducer } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
 import useOutsideClick from './useOutsideClick';
@@ -55,7 +55,7 @@ const Input = styled.input`
   font-weight: 600;
 `;
 
-const Modal = ({ close, userName }) => {
+const Modal = ({ close, userName, setUserName }) => {
   const [name, setName] = useState('');
   const modalRef = useRef(null);
 
@@ -93,6 +93,7 @@ const Modal = ({ close, userName }) => {
         console.error('Error updating user:', error);
         return;
       }
+      setUserName(name);
       close();
     }
   };

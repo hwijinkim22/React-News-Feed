@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Quill 스타일 import (글쓰기 에디터)
+import { useDispatch, useSelector } from 'react-redux';
+import { setUsers } from './../store/slice/newsFeedSlice';
 
 const Container = styled.div`
   display: flex;
@@ -118,7 +120,7 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
 `;
 
-const CommitDetail = ({ users, setUsers }) => {
+const CommitDetail = () => {
   const navigate = useNavigate(); // 홈으로 넘기기 위한 훅
   const location = useLocation(); // HomeFeed 컴포넌트에서 글 내용을 넘겨받기 위한 훅(edit 함수에서)
   const { id, title, content, user_id } = location.state || {};
@@ -129,12 +131,16 @@ const CommitDetail = ({ users, setUsers }) => {
   const [user, setUser] = useState(null); // 사용자 정보 상태 변수와 상태 변경 함수 지정
   // 글쓰기 페이지가 처음 렌더링 될 때 사용자가 로그인했는지 확인
   const [matchedNickName, setMatchedNickName] = useState('');
+
   const [isLoading, setIsLoading] = useState(false); // 로딩 관리
+
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.newsFeed.users);
 
   useEffect(() => {
     const fetchUsers = async () => {
       const { data } = await supabase.from('users').select('*');
-      setUsers(data);
+      dispatch(setUsers(data));
     };
     fetchUsers();
   }, []); // 컴포넌트가 마운트될 때 users 데이터를 가져옴
@@ -150,7 +156,7 @@ const CommitDetail = ({ users, setUsers }) => {
         console.log('users 테이블에서 받아온 유저의 닉네임:', users);
         console.log('수파베이스 auth_nickname:', user.user_metadata.nickname);
 
-        let matchedUser = users.find(u => u.id === user.id);
+        let matchedUser = users.find((u) => u.id === user.id);
         if (matchedUser) {
           console.log('users에서 찾은 이 유저의 닉네임은요 => ', matchedUser.nickname);
           setMatchedNickName(matchedUser.nickname);
@@ -161,9 +167,9 @@ const CommitDetail = ({ users, setUsers }) => {
 
         // 사용자의 프로필 사진 URL 가져오기
         const { data } = supabase.storage.from('profile').getPublicUrl(user.user_metadata.avatar_url);
-        setUser(prevUser => ({
+        setUser((prevUser) => ({
           ...prevUser,
-          profilePicUrl: data.publicUrl, // 프로필 사진 URL 저장
+          profilePicUrl: data.publicUrl // 프로필 사진 URL 저장
         }));
 
         // 유저 정보가 없으면 로그인 페이지로 넘깁니다.
@@ -313,7 +319,9 @@ const CommitDetail = ({ users, setUsers }) => {
         </EditorContainer>
         {contentError && <ErrorMessage>{contentError}</ErrorMessage>}
         <ButtonGroup>
-          <Button type="submit" disabled={isLoading}>등록</Button>
+          <Button type="submit" disabled={isLoading}>
+            등록
+          </Button>
           <CancelButton onClick={handleCancel}>취소</CancelButton>
         </ButtonGroup>
       </Form>

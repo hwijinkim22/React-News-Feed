@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeInput from './HomeInput';
 import Footer from './Footer';
+import { useSelector } from 'react-redux';
 import supabase from '../supabaseClient';
 
 const Container = styled.div`
@@ -28,7 +29,9 @@ const HomePost = styled.div`
   width: 500px;
   height: 500px;
   margin: 10px;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  box-shadow:
+    rgba(0, 0, 0, 0.16) 0px 3px 6px,
+    rgba(0, 0, 0, 0.23) 0px 3px 6px;
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -66,7 +69,7 @@ const HomePostOverlay = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
 `;
 
 const HomePostUserImage = styled.img`
@@ -90,7 +93,7 @@ const HomePostTitle = styled.h5`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 70%; 
+  max-width: 70%;
   // ... 으로 하는 부분 문제있음 (김병준)
 `;
 
@@ -148,12 +151,14 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
-const HomeFeed = ({ posts }) => {
+const HomeFeed = () => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
   const [commentCounts, setCommentCounts] = useState({});
   const [userProfiles, setUserProfiles] = useState({});
+
+  const posts = useSelector((state) => state.newsFeed.posts);
 
   // HomeFeed 컴포넌트에서 DetailPage 컴포넌트로 item을 id로 넘기는 함수
   const handleItemSelect = (id) => {
@@ -165,10 +170,7 @@ const HomeFeed = ({ posts }) => {
   const fetchCommentCounts = async () => {
     const counts = {};
     for (const post of posts) {
-      const { data: comments, error } = await supabase
-        .from('comments')
-        .select('id')
-        .eq('post_id', post.id);
+      const { data: comments, error } = await supabase.from('comments').select('id').eq('post_id', post.id);
 
       if (error) {
         console.error('Error fetching comments:', error);
@@ -187,17 +189,20 @@ const HomeFeed = ({ posts }) => {
         .from('users')
         .select('profilepic')
         .eq('id', post.user_id)
-        .single();
-  
+        .maybeSingle();
+
       if (error) {
         console.error('Error fetching user profile:', error);
         continue;
       }
-      profiles[post.user_id] = user.profilepic || 'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg';
+
+      profiles[post.user_id] =
+        (user && user.profilepic) ||
+        'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg';
     }
     setUserProfiles(profiles);
   };
-  
+
   useEffect(() => {
     fetchCommentCounts();
     fetchUserProfiles();

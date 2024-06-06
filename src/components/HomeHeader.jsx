@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 const Header = styled.div`
   padding: 0;
@@ -67,8 +68,9 @@ const Logo = styled(Link)`
   padding-left: 20px;
 `;
 
-const HomeHeader = ({ signIn, signOut }) => {
+const HomeHeader = ({ signOut }) => {
   const [hideButtons, setHideButtons] = useState(false);
+  const signIn = useSelector((state) => state.newsFeed.signIn);
 
   const checkZoom = () => {
     const zoomLevel = Math.round((window.outerWidth / window.innerWidth) * 100);
