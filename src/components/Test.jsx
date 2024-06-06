@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPosts } from './../store/slice/newsFeedSlice';
 
 const Container = styled.div`
   max-width: 800px;
@@ -69,9 +71,11 @@ const CommentInput = styled.textarea`
   resize: vertical;
 `;
 
-const Test = ({ posts, comments = [] }) => {
+const Test = ({ comments = [] }) => {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
+  const dispatch = useDispatch();
+  const posts = useSelector((state) => state.newsFeed.posts);
 
   useEffect(() => {
     const getUser = async () => {
@@ -100,7 +104,7 @@ const Test = ({ posts, comments = [] }) => {
         alert('게시글이 삭제되었습니다.');
         await supabase.from('posts').delete().eq('id', postId);
         const { data: posts } = await supabase.from('posts').select('*');
-        setPosts(posts);
+        dispatch(setPosts(posts));
       }
     } else {
       alert('권한이 없습니다.');
@@ -137,23 +141,41 @@ const Test = ({ posts, comments = [] }) => {
           <ContentContainer dangerouslySetInnerHTML={{ __html: post.content }} />
           {currentUser && currentUser.id === post.user_id && (
             <div>
-              <Button onClick={(e) => {e.stopPropagation(); handleEdit(post);}}>수정</Button>
-              <DeleteButton onClick={(e) => {e.stopPropagation(); handleDelete(post.id);}}>삭제</DeleteButton>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEdit(post);
+                }}
+              >
+                수정
+              </Button>
+              <DeleteButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(post.id);
+                }}
+              >
+                삭제
+              </DeleteButton>
             </div>
           )}
           <CommentContainer>
             <h6>댓글</h6>
-            {comments.filter(comment => comment.post_id === post.id).map(comment => (
-              <div key={comment.id}>
-                <strong>{comment.user_id}</strong>: {comment.comment}
-              </div>
-            ))}
-            <CommentForm onSubmit={(e) => {
-              e.preventDefault();
-              const comment = e.target.elements.comment.value;
-              handleCommentSubmit(post.id, comment);
-              e.target.reset();
-            }}>
+            {comments
+              .filter((comment) => comment.post_id === post.id)
+              .map((comment) => (
+                <div key={comment.id}>
+                  <strong>{comment.user_id}</strong>: {comment.comment}
+                </div>
+              ))}
+            <CommentForm
+              onSubmit={(e) => {
+                e.preventDefault();
+                const comment = e.target.elements.comment.value;
+                handleCommentSubmit(post.id, comment);
+                e.target.reset();
+              }}
+            >
               <CommentInput name="comment" placeholder="댓글을 작성하세요." />
               <Button type="submit">댓글 작성</Button>
             </CommentForm>
