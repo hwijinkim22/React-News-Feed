@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeInput from './HomeInput';
 import Footer from './Footer';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import supabase from '../supabaseClient';
+import { fetchPosts, incrementForceRender } from '../store/slice/newsFeedSlice';
 
 const Container = styled.div`
   display: flex;
@@ -165,12 +166,19 @@ const CloseButton = styled.button`
 
 const HomeFeed = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
   const [commentCounts, setCommentCounts] = useState({});
   const [userProfiles, setUserProfiles] = useState({});
 
   const posts = useSelector((state) => state.newsFeed.posts);
+  const forceRender = useSelector((state) => state.newsFeed.forceRender);
+
+  useEffect(() => {
+    dispatch(fetchPosts());
+    dispatch(incrementForceRender());
+  }, [dispatch]);
 
   // HomeFeed 컴포넌트에서 DetailPage 컴포넌트로 item을 id로 넘기는 함수
   const handleItemSelect = (id) => {
@@ -218,7 +226,7 @@ const HomeFeed = () => {
   useEffect(() => {
     fetchCommentCounts();
     fetchUserProfiles();
-  }, [posts]);
+  }, [posts, forceRender]);
 
   const handleSearch = (feed) => {
     setSearchFeed(feed);

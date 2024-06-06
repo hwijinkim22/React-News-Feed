@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import supabase from '../supabaseClient';
 import CommentsSection from '../components/CommentsSection';
+import { fetchPosts } from '../store/slice/newsFeedSlice';
 
 const Wrap = styled.div`
   * {
@@ -114,6 +116,7 @@ const Wrap = styled.div`
 const DetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { item } = location.state || {};
   const [currentUser, setCurrentUser] = useState(null);
   const [users, setUsers] = useState();
@@ -195,6 +198,7 @@ const DetailPage = () => {
       if (confirmed) {
         alert('좋습니다. 삭제해드렸습니다.');
         await supabase.from('posts').delete().eq('id', item.id);
+        dispatch(fetchPosts()); // 삭제 후 최신 데이터 가져오기
         navigate('/', { state: { refresh: true } }); // 상태를 전달하여 홈으로 이동
       }
     } else {
@@ -225,6 +229,7 @@ const DetailPage = () => {
 
     setIsSolved(newStatus);
     item.isSolved = newStatus; // 아이템 상태 업데이트
+    dispatch(fetchPosts()); // 업데이트 후 최신 데이터 가져오기
   };
 
   const formatDate = (dateString) => {
