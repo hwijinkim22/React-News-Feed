@@ -64,7 +64,8 @@ const HomePostOverlay = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center; 
 `;
 
 const HomePostUserImage = styled.img`
@@ -85,6 +86,11 @@ const HomePostTitle = styled.h5`
   color: white;
   display: flex;
   justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%; 
+  // ... 으로 하는 부분 문제있음 (김병준)
 `;
 
 const HomePostNicknameContainer = styled.div`
@@ -181,16 +187,16 @@ const HomeFeed = ({ posts }) => {
         .select('profilepic')
         .eq('id', post.user_id)
         .single();
-
+  
       if (error) {
         console.error('Error fetching user profile:', error);
         continue;
       }
-      profiles[post.user_id] = user.profilepic;
+      profiles[post.user_id] = user.profilepic || 'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg';
     }
     setUserProfiles(profiles);
   };
-
+  
   useEffect(() => {
     fetchCommentCounts();
     fetchUserProfiles();
