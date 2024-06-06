@@ -1,51 +1,70 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import homeimage from '../image/homeimage.png';
 
 const Header = styled.div`
+  padding: 0;
+  margin: 0;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 50px;
-  background-color: #343434;
+  height: 60px;
+  background-color: #000000;
   box-shadow: 0 4px 2px -2px gray;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
   z-index: 1000;
 `;
 
 const HeaderBtns = styled.div`
-  position: absolute;
-  right: 20px;
+  /* position: absolute;
+  right: 20px; */
   display: ${(props) => (props.hide === 'true' ? 'none' : 'flex')};
 `;
 
 const HeaderBtn = styled.button`
-  margin-right: 50px;
+  /* margin-right: 50px; */
   padding: 10px 20px;
   font-size: 1rem;
   color: #fff;
-  background-color: #007bff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 
+
+
+  margin-right: 20px;
+  transition: 0.5s;
+  background-image: linear-gradient(to right, #a1c4fd 0%, #c2e9fb 51%, #a1c4fd 100%);;
+  text-align: center;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  border-radius: 10px;
+
   &:hover {
-    background-color: #0056b3;
+    background-position: right center;
+    background-image: linear-gradient(to right, #a1c4fd 0%, #c2e9fb 51%, #a1c4fd 100%);
   }
 `;
 
-const HomeImage = styled.img`
-  position: absolute;
-  left: 20px;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  display: ${(props) => (props.hide === 'true' ? 'none' : 'flex')};
+// const HomeImage = styled.img`
+//   position: absolute;
+//   left: 20px;
+//   width: 40px;
+//   height: 40px;
+//   cursor: pointer;
+//   display: ${(props) => (props.hide === 'true' ? 'none' : 'flex')};
+// `;
+
+const Logo = styled(Link)`
+  font-size: 28px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding-left: 20px;
 `;
 
 const HomeHeader = ({ signIn, signOut }) => {
@@ -75,9 +94,9 @@ const HomeHeader = ({ signIn, signOut }) => {
     navigate('/mypage');
   };
 
-  const moveHome = () => {
-    navigate('/');
-  };
+  // const moveHome = () => {
+  //   navigate('/');
+  // };
 
   const moveLogin = () => {
     navigate('/login');
@@ -92,8 +111,11 @@ const HomeHeader = ({ signIn, signOut }) => {
   return (
     <>
       <Header>
-        <HomeImage src={homeimage} onClick={moveHome} hide={hideButtons ? 'true' : 'false'} />
-        <p style={{ color: 'blue' }}>Our Knowledge</p>
+        {/* <HomeImage onClick={moveHome} hide={hideButtons ? 'true' : 'false'} /> */}
+
+        <Logo className="header__logo" to="/">
+          Our Knowledge
+        </Logo>
         <HeaderBtns hide={hideButtons ? 'true' : 'false'}>
           {signIn ? (
             <>
