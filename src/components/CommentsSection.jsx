@@ -23,6 +23,15 @@ const CommentsWrapper = styled.div`
 
       .comment__author {
         font-weight: bold;
+        display: flex;
+        align-items: center;
+      }
+
+      .comment__author img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
       }
 
       .comment__date {
@@ -38,6 +47,7 @@ const CommentsWrapper = styled.div`
         position: absolute;
         right: 10px;
         top: 10px;
+        display: flex;
 
         .action__icon {
           margin-left: 10px;
@@ -125,6 +135,7 @@ const CommentsSection = ({ postId, users }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editedCommentText, setEditedCommentText] = useState('');
+    const [userProfiles, setUserProfiles] = useState({});
 
     useLayoutEffect(() => {
         const fetchComments = async () => {
@@ -166,6 +177,31 @@ const CommentsSection = ({ postId, users }) => {
 
         getUser();
     }, []);
+
+    useEffect(() => {
+        const fetchUserProfiles = async () => {
+            const profiles = {};
+            for (const comment of comments) {
+                if (!profiles[comment.user_id]) {
+                    const { data: user, error } = await supabase
+                        .from('users')
+                        .select('profilepic')
+                        .eq('id', comment.user_id)
+                        .single();
+
+                    if (error) {
+                        console.error('Error fetching user profile:', error);
+                        continue;
+                    }
+
+                    profiles[comment.user_id] = user.profilepic || 'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg';
+                }
+            }
+            setUserProfiles(profiles);
+        };
+
+        fetchUserProfiles();
+    }, [comments]);
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
@@ -291,7 +327,10 @@ const CommentsSection = ({ postId, users }) => {
                 <ul className="comments__list">
                     {comments.map((comment) => (
                         <li key={comment.id} className="comment__item">
-                            <p className="comment__author">{comment.nickname || comment.user_id}</p>
+                            <p className="comment__author">
+                                <img src={userProfiles[comment.user_id]} alt="User Avatar" />
+                                {comment.nickname || comment.user_id}
+                            </p>
                             <p className="comment__date">{new Date(comment.created_at).toLocaleString()}</p>
                             {editingCommentId === comment.id ? (
                                 <>
@@ -305,7 +344,7 @@ const CommentsSection = ({ postId, users }) => {
                             ) : (
                                 <p className="comment__text">{comment.comment}</p>
                             )}
-                            {currentUser && currentUser.id === comment.user_id && (
+                            {currentUser && currentUser.id === comment.user_id && editingCommentId !== comment.id && (
                                 <div className="comment__actions">
                                     <FaEdit className="action__icon" onClick={() => handleEditComment(comment.id, comment.comment)} />
                                     <FaTrash className="action__icon" onClick={() => handleDeleteComment(comment.id)} />
