@@ -1,7 +1,8 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import { useState, useLayoutEffect, useEffect } from 'react';
 import styled from 'styled-components';
 import supabase from '../supabaseClient';
 import { FaEdit, FaTrash } from 'react-icons/fa'; // 아이콘 추가
+import { useSelector } from 'react-redux';
 
 const CommentsWrapper = styled.div`
   width: 100%;
@@ -129,13 +130,15 @@ const EmptySpace = styled.div`
   height: 100px;
 `;
 
-const CommentsSection = ({ postId, users }) => {
+const CommentsSection = ({ postId }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedCommentText, setEditedCommentText] = useState('');
   const [userProfiles, setUserProfiles] = useState({});
+
+  const users = useSelector((state) => state.newsFeed.users);
 
   useLayoutEffect(() => {
     const fetchComments = async () => {
