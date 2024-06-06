@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeInput from './HomeInput';
@@ -29,7 +29,9 @@ const HomePost = styled.div`
   width: 500px;
   height: 500px;
   margin: 10px;
-  border: 2px solid black;
+  box-shadow:
+    rgba(0, 0, 0, 0.16) 0px 3px 6px,
+    rgba(0, 0, 0, 0.23) 0px 3px 6px;
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -37,8 +39,7 @@ const HomePost = styled.div`
     transform 0.3s,
     box-shadow 0.3s;
   &:hover {
-    transform: scale(1.05);
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
   }
 `;
 
@@ -51,6 +52,8 @@ const HomePostImage = styled.div`
   position: absolute;
   top: 0;
   left: 0;
+
+  padding: 0 20px;
 `;
 
 const HomePostOverlay = styled.div`
@@ -65,9 +68,21 @@ const HomePostOverlay = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
-const HomePostUserImage = styled.div``;
+const HomePostUserImage = styled.img`
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  margin-left: 10px;
+`;
 
 const HomePostTitle = styled.h5`
   margin: 0;
@@ -75,13 +90,34 @@ const HomePostTitle = styled.h5`
   color: white;
   display: flex;
   justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+  // ... 으로 하는 부분 문제있음 (김병준)
+`;
+
+const HomePostNicknameContainer = styled.div`
+  position: absolute;
+  bottom: 70px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+`;
+
+// 닉네임과 사진을 묶음 (김병준)
+const HomePostUserInfo = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const HomePostNickname = styled.h5`
   margin-top: 10px;
   font-size: 14px;
   display: flex;
-  justify-content: center;
 `;
 
 const HomePostCommentCount = styled.div`
@@ -120,6 +156,7 @@ const HomeFeed = () => {
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
   const [commentCounts, setCommentCounts] = useState({});
+  const [userProfiles, setUserProfiles] = useState({});
 
   const posts = useSelector((state) => state.newsFeed.posts);
 
@@ -144,8 +181,26 @@ const HomeFeed = () => {
     setCommentCounts(counts);
   };
 
+  // 각 게시물의 작성자 프로필 사진 URL을 불러오는 함수
+  const fetchUserProfiles = async () => {
+    const profiles = {};
+    for (const post of posts) {
+      const { data: user, error } = await supabase.from('users').select('profilepic').eq('id', post.user_id).single();
+
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        continue;
+      }
+      profiles[post.user_id] =
+        user.profilepic ||
+        'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg';
+    }
+    setUserProfiles(profiles);
+  };
+
   useEffect(() => {
     fetchCommentCounts();
+    fetchUserProfiles();
   }, [posts]);
 
   const handleSearch = (feed) => {
@@ -166,9 +221,9 @@ const HomeFeed = () => {
             <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
             <HomePostCommentCount>댓글 {commentCounts[post.id] || 0} 개</HomePostCommentCount>
             <HomePostOverlay>
-              <HomePostUserImage></HomePostUserImage>
+              <HomePostNicknameContainer>{post.nickname}</HomePostNicknameContainer>
+              <HomePostUserImage src={userProfiles[post.user_id]} alt="User Avatar" />
               <HomePostTitle>{post.title}</HomePostTitle>
-              <HomePostNickname>{post.nickname}</HomePostNickname>
             </HomePostOverlay>
           </HomePost>
         ))}

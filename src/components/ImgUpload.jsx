@@ -91,6 +91,14 @@ const ImgUpload = ({ user, setUser }) => {
         data: { avatar_url: publicUrl }
       });
       if (updateError) throw updateError;
+
+      // users 테이블의 profilepic 컬럼 업데이트(김병준)
+      const { error: userTableUpdateError } = await supabase
+        .from('users')
+        .update({ profilepic: publicUrl })
+        .eq('id', user.id);
+      if (userTableUpdateError) throw userTableUpdateError;
+
       setUser((prev) => ({
         ...prev,
         user_metadata: {
