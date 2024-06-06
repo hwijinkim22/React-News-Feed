@@ -112,7 +112,7 @@ const CommentsSection = ({ postId, users }) => {
         e.preventDefault();
 
         if (!currentUser) {
-            alert('로그인이 필요합니다.');
+            alert('어허~ 돌아가~ 로그인 안 하면 댓글을 못 달아요!');
             return;
         }
 
