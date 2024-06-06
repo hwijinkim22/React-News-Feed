@@ -185,14 +185,19 @@ const HomeFeed = () => {
   const fetchUserProfiles = async () => {
     const profiles = {};
     for (const post of posts) {
-      const { data: user, error } = await supabase.from('users').select('profilepic').eq('id', post.user_id).single();
+      const { data: user, error } = await supabase
+        .from('users')
+        .select('profilepic')
+        .eq('id', post.user_id)
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching user profile:', error);
         continue;
       }
+
       profiles[post.user_id] =
-        user.profilepic ||
+        (user && user.profilepic) ||
         'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg';
     }
     setUserProfiles(profiles);

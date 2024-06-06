@@ -51,7 +51,12 @@ const App = () => {
     fetchUsers();
     checkSignIn();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        dispatch(setUsers(session.user));
+      } else {
+        dispatch(setUsers(null));
+      }
       checkSignIn();
     });
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import styled from 'styled-components';
@@ -74,7 +74,7 @@ const LoginPage = ({ signOut }) => {
       if (error) {
         throw error;
       }
-      console.log(data);
+
       if (data) {
         dispatch(setSignIn(true));
         alert(`${data.user.user_metadata.nickname}님 환영합니다.`);
@@ -92,8 +92,7 @@ const LoginPage = ({ signOut }) => {
     const { error, data } = await supabase.auth.signInWithOAuth({
       provider: 'github'
     });
-    console.log(error);
-    console.log(data);
+
     if (error) {
       console.error('깃허브 로그인 에러', error.message);
       alert('로그인 오류가 발생하였습니다, 다시 시도해주세요.');
@@ -101,6 +100,7 @@ const LoginPage = ({ signOut }) => {
     console.log('OAuth 데이터:', data);
 
     if (data) {
+      dispatch(setSignIn(true));
       navigate('/');
     } else {
       alert('회원가입이 필요합니다.');

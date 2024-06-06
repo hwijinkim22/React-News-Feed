@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react';
 import supabase from '../supabaseClient';
 import Modal from '../components/Modal';
 import ImgUpload from '../components/ImgUpload';
-// import HomeHeader from '../components/HomeHeader';
 
 const Container = styled.div`
   max-width: 800px;
@@ -81,26 +80,37 @@ const MyPage = () => {
   const [nameModal, setNameModal] = useState(false);
   const navigate = useNavigate();
 
-  const getUserNickname = useCallback(async () => {
+  const getUserNickname = useCallback(async (userId) => {
+    if (!userId) return; // userId가 없으면 함수 종료
     const { data: userNickName, error: userNickNameError } = await supabase
       .from('users')
       .select('nickname')
-      .eq('id', user.id)
+      .eq('id', userId)
       .single();
     if (userNickNameError) {
       console.error('Error fetching nickname:', userNickNameError);
     } else {
       setUserName(userNickName.nickname);
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
-    // 사용자 정보 가져오기
-    const fetchPosts = async () => {
+    const fetchUser = async () => {
       const { data: authData } = await supabase.auth.getUser();
       if (authData?.user) {
-        const userId = authData.user.id;
         setUser(authData.user);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      const fetchPostsAndNickname = async () => {
+        const userId = user.id;
+
+        // 사용자 닉네임 가져오기
+        getUserNickname(userId);
 
         // 게시물 가져오기
         const { data: posts, error } = await supabase
@@ -116,11 +126,10 @@ const MyPage = () => {
         } else {
           setPostList(posts);
         }
-      }
-    };
-    fetchPosts();
-    getUserNickname();
-  }, [getUserNickname]);
+      };
+      fetchPostsAndNickname();
+    }
+  }, [user, getUserNickname]);
 
   const changeName = () => {
     setNameModal(true);
@@ -148,6 +157,7 @@ const MyPage = () => {
                 setNameModal(false);
               }}
               userName={userName}
+              setUserName={setUserName}
             />
           )}
         </Profile>

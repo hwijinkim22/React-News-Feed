@@ -76,7 +76,7 @@ const Wrap = styled.div`
     word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정 */
     border-radius: 20px;
 
-    margin-bottom:  20px;
+    margin-bottom: 20px;
   }
 
   .detail__post__btns {
@@ -127,17 +127,16 @@ const DetailPage = () => {
     if (item) {
       const fetchUserProfile = async () => {
         try {
-          const { data, error } = await supabase
-            .from('users')
-            .select('profilepic')
-            .eq('id', item.user_id)
-            .single();
+          const { data, error } = await supabase.from('users').select('profilepic').eq('id', item.user_id).single();
 
           if (error) {
             throw error;
           }
 
-          setProfilePic(data.profilepic || 'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg');
+          setProfilePic(
+            data.profilepic ||
+              'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg'
+          );
         } catch (error) {
           console.error('Error fetching user profile:', error.message);
         }
@@ -149,7 +148,9 @@ const DetailPage = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
       setCurrentUser(user);
     };
 
