@@ -1,6 +1,6 @@
 # React New Speed 팀 프로젝트
 
-- 배포 URL : 준비중입니다.
+- 배포 URL : https://ourknowledge-yfu9.vercel.app/
 
 ## 팀원 구성
 
