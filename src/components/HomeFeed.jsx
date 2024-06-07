@@ -133,21 +133,6 @@ const HomePostCommentCount = styled.div`
 
 const HomePostDate = styled.div`
   display: flex;
-`;
-
-const HomePostCommentCount = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 10px;
-  font-size: 12px;
-`;
-
-const HomePostDate = styled.div`
-  display: flex;
   justify-content: center;
 `;
 
