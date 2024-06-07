@@ -136,6 +136,7 @@ const HomePostCommentCount = styled.div`
 const HomePostDate = styled.div`
   display: flex;
   justify-content: center;
+  `
 
 const HomePostSolveStatus = styled.div`
   position: absolute;
