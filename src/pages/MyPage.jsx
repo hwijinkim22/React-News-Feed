@@ -1,10 +1,9 @@
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import supabase from '../supabaseClient';
 import Modal from '../components/Modal';
 import ImgUpload from '../components/ImgUpload';
-import HomeHeader from '../components/HomeHeader';
 
 const Container = styled.div`
   max-width: 800px;
@@ -77,34 +76,60 @@ const Content = styled.div`
 const MyPage = () => {
   const [postList, setPostList] = useState([]);
   const [user, setUser] = useState(null);
+  const [userName, setUserName] = useState('');
   const [nameModal, setNameModal] = useState(false);
   const navigate = useNavigate();
 
+  const getUserNickname = useCallback(async (userId) => {
+    if (!userId) return; // userId가 없으면 함수 종료
+    const { data: userNickName, error: userNickNameError } = await supabase
+      .from('users')
+      .select('nickname')
+      .eq('id', userId)
+      .single();
+    if (userNickNameError) {
+      console.error('Error fetching nickname:', userNickNameError);
+    } else {
+      setUserName(userNickName.nickname);
+    }
+  }, []);
   console.log(user);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: authData } = await supabase.auth.getUser();
+      if (authData?.user) {
+        setUser(authData.user);
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
+    if (user) {
+      const fetchPostsAndNickname = async () => {
+        const userId = user.id;
+
+        // 사용자 닉네임 가져오기
+        getUserNickname(userId);
+
+        // 게시물 가져오기
         const { data: posts, error } = await supabase
           .from('posts')
-          .select('id, title, created_at, content, user_id, nickname')
-          .eq('user_id', user.id)
+          .select('id, title, created_at, content, user_id')
+          .eq('user_id', userId)
           .order('created_at', {
             ascending: false
           });
+
         if (error) {
           console.error('Error fetching posts', error);
         } else {
           setPostList(posts);
         }
-      }
-    };
-    fetchPosts();
-  }, []);
+      };
+      fetchPostsAndNickname();
+    }
+  }, [user, getUserNickname]);
 
   const changeName = () => {
     setNameModal(true);
@@ -122,7 +147,7 @@ const MyPage = () => {
         <Profile>
           <ImgUpload user={user} setUser={setUser} />
         </Profile>
-        <Profile>{user?.user_metadata?.nickname || user?.email}</Profile>
+        <Profile>{userName || user?.user_metadata.user_name}</Profile>
         <Profile>
           <Nickname onClick={changeName}>✒️</Nickname>
           {nameModal && (
@@ -131,13 +156,12 @@ const MyPage = () => {
               close={() => {
                 setNameModal(false);
               }}
-              user={user}
-              setUser={setUser}
+              userName={userName}
+              setUserName={setUserName}
             />
           )}
         </Profile>
       </Profiles>
-
       <Notes>
         {postList && postList.length > 0 ? (
           postList.map((post) => {

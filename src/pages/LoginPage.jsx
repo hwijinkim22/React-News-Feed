@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSignIn } from './../store/slice/newsFeedSlice';
 
 const Container = styled.div`
   display: flex;
@@ -55,10 +57,12 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vemVrZ2pnZWluZGd5dWxmYXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTcxNDI1MDEsImV4cCI6MjAzMjcxODUwMX0.Wu1dt8WSMSro-_ieydr-ghmfcKPr568Ovm6dfzgrB00'
 );
 
-const LoginPage = ({ signIn, setSignIn, signOut }) => {
+const LoginPage = ({ signOut }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const signIn = useSelector((state) => state.newsFeed.signIn);
 
   const signInWithEmailPassword = async (e) => {
     e.preventDefault();
@@ -70,17 +74,24 @@ const LoginPage = ({ signIn, setSignIn, signOut }) => {
       if (error) {
         throw error;
       }
-      console.log(data);
-      if (data) {
-        setSignIn(true);
-        alert(`${data.user.user_metadata.nickname}님 환영합니다.`);
-        navigate('/');
-      } else {
-        alert('등록된 정보가 아닙니다. 회원가입을 진행해주세요.');
+
+      const user = data.user;
+      const { data: userMetadata, error: userMetadataError } = await supabase
+        .from('users')
+        .select('nickname')
+        .eq('id', user.id)
+        .single();
+
+      if (userMetadataError) {
+        throw userMetadataError;
       }
+
+      dispatch(setSignIn(true));
+      alert(`${userMetadata.nickname}님 환영합니다.`);
+      navigate('/');
     } catch (error) {
       console.error('로그인 중 오류 발생:', error.message);
-      alert('로그인 오류 발생');
+      alert('로그인 오류 발생! 존재하지 않는 아이디, 비밀번호입니다.');
     }
   };
 
@@ -88,15 +99,16 @@ const LoginPage = ({ signIn, setSignIn, signOut }) => {
     const { error, data } = await supabase.auth.signInWithOAuth({
       provider: 'github'
     });
-    console.log(error);
-    console.log(data);
+
     if (error) {
       console.error('깃허브 로그인 에러', error.message);
       alert('로그인 오류가 발생하였습니다, 다시 시도해주세요.');
+      return
     }
     console.log('OAuth 데이터:', data);
 
     if (data) {
+      dispatch(setSignIn(true));
       navigate('/');
     } else {
       alert('회원가입이 필요합니다.');

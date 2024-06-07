@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Quill 스타일 import (글쓰기 에디터)
+import { useDispatch, useSelector } from 'react-redux';
+import { setUsers } from './../store/slice/newsFeedSlice';
 
 const Container = styled.div`
   display: flex;
@@ -118,31 +120,30 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
 `;
 
-const CommitDetail = ({users}) => {
+const CommitDetail = () => {
   const navigate = useNavigate(); // 홈으로 넘기기 위한 훅
   const location = useLocation(); // HomeFeed 컴포넌트에서 글 내용을 넘겨받기 위한 훅(edit 함수에서)
   const { id, title, content, user_id } = location.state || {};
-  // console.log('넘겨받은 아이디:', id, '넘겨받은 타이틀:', title, '넘겨받은 컨텐츠:', content, '넘겨받은 유저아이디:', user_id);
-  useEffect(() => {
-    console.log(
-      '넘겨받은 아이디:',
-      id,
-      '넘겨받은 타이틀:',
-      title,
-      '넘겨받은 컨텐츠:',
-      content,
-      '넘겨받은 유저아이디:',
-      user_id
-    );
-  }, [id, title, content, user_id]);
-
   const [postTitle, setPostTitle] = useState(title || ''); // 글 제목(title)을 상태로 관리(test에서 넘겨받은 값)
   const [postContent, setPostContent] = useState(content || ''); // 글 내용(content)을 상태로 관리(test에서 넘겨받은 값)
   const [titleError, setTitleError] = useState(''); // 제목 에러 메시지 띄우기 위해 상태로 관리
   const [contentError, setContentError] = useState(''); // 내용 에러 메시지 띄우기 위해 상태로 관리
   const [user, setUser] = useState(null); // 사용자 정보 상태 변수와 상태 변경 함수 지정
   // 글쓰기 페이지가 처음 렌더링 될 때 사용자가 로그인했는지 확인
-  const [matchedNickName ,setMatchedNickName] = useState('');
+  const [matchedNickName, setMatchedNickName] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false); // 로딩 관리
+
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.newsFeed.users);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const { data } = await supabase.from('users').select('*');
+      dispatch(setUsers(data));
+    };
+    fetchUsers();
+  }, []); // 컴포넌트가 마운트될 때 users 데이터를 가져옴
 
   useEffect(() => {
     const checkUser = async () => {
@@ -155,7 +156,7 @@ const CommitDetail = ({users}) => {
         console.log('users 테이블에서 받아온 유저의 닉네임:', users);
         console.log('수파베이스 auth_nickname:', user.user_metadata.nickname);
 
-        let matchedUser = users.find(u => u.id === user.id);
+        let matchedUser = users.find((u) => u.id === user.id);
         if (matchedUser) {
           console.log('users에서 찾은 이 유저의 닉네임은요 => ', matchedUser.nickname);
           setMatchedNickName(matchedUser.nickname);
@@ -163,6 +164,14 @@ const CommitDetail = ({users}) => {
           console.log('users 테이블에서 이 유저의 닉네임을 못찾았습니다요');
         }
         setUser(user); // 받아온 사용자 정보로 user 상태를 업데이트
+
+        // 사용자의 프로필 사진 URL 가져오기
+        const { data } = supabase.storage.from('profile').getPublicUrl(user.user_metadata.avatar_url);
+        setUser((prevUser) => ({
+          ...prevUser,
+          profilePicUrl: data.publicUrl // 프로필 사진 URL 저장
+        }));
+
         // 유저 정보가 없으면 로그인 페이지로 넘깁니다.
       } else {
         navigate('/login');
@@ -174,7 +183,7 @@ const CommitDetail = ({users}) => {
     // plugin:react-hooks/recommended
     // 위 설정 때문에 의존성 배열을 비워두지 않도록 권고하고 있습니다.
     // 따라서 변할 일이 없는 navigate 함수를 넣어놓은 것으로 의미는 없습니다. 빈 배열이나 마찬가지입니다.
-  }, [navigate]);
+  }, [navigate, users]);
 
   // title 필드의 값이 변경될 때 호출할 함수.
   // 길이가 20자 이상이면 경고를 띄우고 20자 미만이면 에러 메시지를 비웁니다.
@@ -194,9 +203,8 @@ const CommitDetail = ({users}) => {
   // 작성 버튼을 눌렀을 때(폼이 제출될 때) 호출할 함수입니다.
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // valid는 유효성 검사를 위한 플래그 변수임. true로 초기화한 이유는 일반적으로는 글을 제대로 쓸 것이기 때문입니다.
-    // supabase 테이블에 넣기 위한 유효성 검사 규칙은 아직 모릅니다.
-    // 저의 편의상 추가한 유효성 검사입니다.
+    setIsLoading(true); // 게시글 작성 버튼 클릭 시 로딩 시작
+    // valid는 유효성 검사를 위한 플래그 변수임. true로 초기화한 이유는 일반적으로는 글을 제대로 쓸 것이기 때문.
     let valid = true;
     const nickname = matchedNickName;
 
@@ -236,11 +244,11 @@ const CommitDetail = ({users}) => {
           alert(`데이터 삽입 오류: ${errorMessage}`);
         } else {
           alert('좋아요! 글이 등록되었습니다!');
-          navigate('/');
-          window.location.reload();
+          navigate('/', { state: { refresh: true } }); // 상태를 전달하여 홈으로 이동
         }
       }
     }
+    setIsLoading(false); // 게시글 작성 로딩 종료
   };
 
   // Supabase 오류 메시지를 한국어로 번역하는 함수. 오류 케이스를 아직 확인은 안 했습니다.
@@ -272,9 +280,9 @@ const CommitDetail = ({users}) => {
   };
 
   // 취소 버튼이 클릭될 때 호출할 함수.
-  // 컨펌창을 띄울 것이고, 사용자가 경고에도 확인을 누르면 test 컴포넌트로 넘깁니다.(메인 뉴스피드 페이지)
   const handleCancel = () => {
-    if (window.confirm('취소를 누르면 작성한 내용을 복구해드릴 수 없어요. 괜찮으시겠어요?')) {
+    const confirmed = window.confirm('취소를 누르면 작성한 내용을 복구해드릴 수 없어요. 괜찮으시겠어요?');
+    if (confirmed) {
       navigate('/');
     }
   };
@@ -311,7 +319,9 @@ const CommitDetail = ({users}) => {
         </EditorContainer>
         {contentError && <ErrorMessage>{contentError}</ErrorMessage>}
         <ButtonGroup>
-          <Button type="submit">등록</Button>
+          <Button type="submit" disabled={isLoading}>
+            등록
+          </Button>
           <CancelButton onClick={handleCancel}>취소</CancelButton>
         </ButtonGroup>
       </Form>

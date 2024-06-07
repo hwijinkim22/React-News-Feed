@@ -1,8 +1,8 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
 import supabase from '../supabaseClient';
+import CommentsSection from '../components/CommentsSection';
 
 const Wrap = styled.div`
   * {
@@ -42,9 +42,11 @@ const Wrap = styled.div`
       }
 
       > img {
-        width: 340px;
+        width: 140px;
         height: 140px;
         margin-right: 50px;
+        border-radius: 50%; /* 동그랗게 설정 */
+        object-fit: cover; /* 이미지 크기 조절 */
       }
 
       .post__title {
@@ -69,9 +71,12 @@ const Wrap = styled.div`
     border: 1px solid #000000;
     min-height: 800px;
     padding: 40px;
-    overflow: auto; /* 스크롤 가능하도록 설정(김병준)) */
+    overflow: auto; /* 스크롤 가능하도록 설정 */
     max-width: 100%;
-    word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정(김병준) */
+    word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정 */
+    border-radius: 20px;
+
+    margin-bottom: 20px;
   }
 
   .detail__post__btns {
@@ -94,17 +99,52 @@ const Wrap = styled.div`
 `;
 
 const DetailPage = () => {
-  // detailpage 기능 추가 (김병준)
   const location = useLocation();
   const navigate = useNavigate();
   const { item } = location.state || {};
   const [currentUser, setCurrentUser] = useState(null);
+  const [users, setUsers] = useState();
+  const [profilePic, setProfilePic] = useState('');
 
-  console.log('아이템 홈에서 넘겨 받은 내용:', item);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data, error } = await supabase.from('users').select('*');
+        if (error) {
+          throw error;
+        }
+        setUsers(data);
+        console.log('디테일 컴포넌트에서 새로 받은 users 테이블 =>', data);
+      } catch (error) {
+        console.error('Error fetching users:', error.message);
+      }
+    };
 
-  if (!item) {
-    return <p>Loading...</p>;
-  }
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    if (item) {
+      const fetchUserProfile = async () => {
+        try {
+          const { data, error } = await supabase.from('users').select('profilepic').eq('id', item.user_id).single();
+
+          if (error) {
+            throw error;
+          }
+
+          setProfilePic(
+            data.profilepic ||
+              'https://nozekgjgeindgyulfapu.supabase.co/storage/v1/object/public/profile/default-profile.jpg'
+          );
+        } catch (error) {
+          console.error('Error fetching user profile:', error.message);
+        }
+      };
+
+      fetchUserProfile();
+    }
+  }, [item]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -125,10 +165,7 @@ const DetailPage = () => {
     console.log('두 사람이 같은 사람인지 확인:', nowUser === authorUser);
     console.log('길이 비교 - 현재 사용자:', nowUser.length, '작성자:', authorUser.length);
 
-    // 이유를 모르겠으나 post를 넘기는데 깊은 복사가 안 되어 구조 분해 할당으로 commitdetail 페이지로 넘김.
-    const { id, title, content, user_id } = post;
     if (currentUser && nowUser === authorUser) {
-      // navigate('/commitdetail', { state: {post : { id, title, content, user_id }} });
       navigate('/commitdetail', { state: post });
     } else {
       alert('멈추세요! 게시글 작성자만 글을 수정할 수 있습니다.');
@@ -143,15 +180,13 @@ const DetailPage = () => {
       if (confirmed) {
         alert('좋습니다. 삭제해드렸습니다.');
         await supabase.from('posts').delete().eq('id', item.id);
-        navigate('/');
-        window.location.reload();
+        navigate('/', { state: { refresh: true } }); // 상태를 전달하여 홈으로 이동
       }
     } else {
       alert('이런! 당신은 이 게시글 작성자가 아니잖아요!');
     }
   };
 
-  // 글쓴 시각 포매팅 함수 (김병준)
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -164,16 +199,16 @@ const DetailPage = () => {
     return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분 ${seconds}초`;
   };
 
+  if (!item) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <Wrap>
-      {/* <Link to="/CommitDetail"> CommitDetail </Link> */}
-
       <div className="detail__wrap">
-        <h1>상세페이지</h1>
-
         <div className="detail__post__ul">
           <div className="detail__post__list">
-            <img src="https://placehold.co/340x140" />
+            <img src={profilePic} alt="Profile" />
 
             <div className="post__list__content">
               <p className="post__title">{item.title}</p>
@@ -195,6 +230,7 @@ const DetailPage = () => {
         <div className="post__content__box">
           <p dangerouslySetInnerHTML={{ __html: item.content }} />
         </div>
+        <CommentsSection postId={item.id} users={users} />
       </div>
     </Wrap>
   );
