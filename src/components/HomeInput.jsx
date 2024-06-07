@@ -12,7 +12,7 @@ const SearchInput = styled.input`
 `;
 
 const InputImage = styled.img`
-  padding-top: 60px;
+  padding-top: 70px;
   width: 50px;
   height: 50px;
   cursor: pointer;

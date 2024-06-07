@@ -116,7 +116,7 @@ const HomePostUserInfo = styled.div`
 `;
 
 const HomePostNickname = styled.h5`
-  margin-top: 10px;
+  margin-top: 5px;
   font-size: 14px;
   display: flex;
 `;
@@ -132,6 +132,11 @@ const HomePostCommentCount = styled.div`
   font-size: 12px;
 `;
 
+
+const HomePostDate = styled.div`
+  display: flex;
+  justify-content: center;
+
 const HomePostSolveStatus = styled.div`
   position: absolute;
   top: 10px;
@@ -142,6 +147,7 @@ const HomePostSolveStatus = styled.div`
   padding: 5px 10px;
   border-radius: 10px;
   font-size: 12px;
+
 `;
 
 const MoreButton = styled.button`
@@ -237,11 +243,21 @@ const HomeFeed = () => {
       post.title.toString().includes(searchFeed) || post.content.toLowerCase().includes(searchFeed.toLowerCase())
   );
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+
+    return `${year}년 ${month}월 ${day}일 ${hours}시`;
+  };
+
   return (
     <Container>
       <HomeInput onSearch={handleSearch} />
       <HomeContent>
-        {filterdPosts.slice(0, showAll ? filterdPosts.length : 4).map((post) => (
+        {filterdPosts.slice(0, showAll ? filterdPosts.length : 2).map((post) => (
           <HomePost key={post.id} onClick={() => handleItemSelect(post.id)}>
             <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
             <HomePostCommentCount>댓글 {commentCounts[post.id] || 0} 개</HomePostCommentCount>
@@ -252,6 +268,8 @@ const HomeFeed = () => {
               <HomePostNicknameContainer>{post.nickname}</HomePostNicknameContainer>
               <HomePostUserImage src={userProfiles[post.user_id]} alt="User Avatar" />
               <HomePostTitle>{post.title}</HomePostTitle>
+
+              <HomePostDate>{formatDate(post.created_at)}</HomePostDate>
             </HomePostOverlay>
           </HomePost>
         ))}
