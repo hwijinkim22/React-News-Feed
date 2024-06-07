@@ -33,11 +33,9 @@ const HeaderBtn = styled.button`
   border-radius: 5px;
   cursor: pointer;
 
-
-
   margin-right: 20px;
   transition: 0.5s;
-  background-image: linear-gradient(to right, #a1c4fd 0%, #c2e9fb 51%, #a1c4fd 100%);;
+  background-image: linear-gradient(to right, #a1c4fd 0%, #c2e9fb 51%, #a1c4fd 100%);
   text-align: center;
   transition: 0.5s;
   background-size: 200% auto;

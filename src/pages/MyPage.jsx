@@ -93,7 +93,7 @@ const MyPage = () => {
       setUserName(userNickName.nickname);
     }
   }, []);
-
+  console.log(user);
   useEffect(() => {
     const fetchUser = async () => {
       const { data: authData } = await supabase.auth.getUser();
@@ -147,7 +147,7 @@ const MyPage = () => {
         <Profile>
           <ImgUpload user={user} setUser={setUser} />
         </Profile>
-        <Profile>{userName}</Profile>
+        <Profile>{userName || user?.user_metadata.user_name}</Profile>
         <Profile>
           <Nickname onClick={changeName}>✒️</Nickname>
           {nameModal && (

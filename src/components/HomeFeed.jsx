@@ -261,7 +261,7 @@ const HomeFeed = () => {
       ) : (
         <MoreButton onClick={() => setShowAll(true)}>더보기</MoreButton>
       )}
-      <Footer />
+      <Footer />~
     </Container>
   );
 };
