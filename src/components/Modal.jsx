@@ -87,6 +87,13 @@ const Modal = ({ close, userName, setUserName }) => {
 
       const userId = authData.user.id;
 
+      const { data: existingUser } = await supabase.from('users').select('id').eq('nickname', name).single();
+
+      if (existingUser && existingUser.id !== userId) {
+        alert('이미 사용 중인 닉네임입니다.');
+        return;
+      }
+
       const { error } = await supabase.from('users').update({ nickname: name }).eq('id', userId);
 
       if (error) {

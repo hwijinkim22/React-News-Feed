@@ -249,7 +249,7 @@ const DetailPage = () => {
   }
 
   return (
-    <Wrap>
+    <Wrap solved={isSolved}>
       <div className="detail__wrap">
         <div className="detail__post__ul">
           <div className="detail__post__list">
@@ -264,7 +264,7 @@ const DetailPage = () => {
 
           <div className="detail__post__btns">
             {currentUser && currentUser.id === item.user_id && (
-              <button className="post__solve_status" solved={isSolved} onClick={handleSolveStatus}>
+              <button className="post__solve_status" onClick={handleSolveStatus}>
                 {isSolved ? '해결완료' : '해결중'}
               </button>
             )}
