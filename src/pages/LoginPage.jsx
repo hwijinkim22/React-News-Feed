@@ -75,16 +75,23 @@ const LoginPage = ({ signOut }) => {
         throw error;
       }
 
-      if (data) {
-        dispatch(setSignIn(true));
-        alert(`${data.user.user_metadata.nickname}님 환영합니다.`);
-        navigate('/');
-      } else {
-        alert('등록된 정보가 아닙니다. 회원가입을 진행해주세요.');
+      const user = data.user;
+      const { data: userMetadata, error: userMetadataError } = await supabase
+        .from('users')
+        .select('nickname')
+        .eq('id', user.id)
+        .single();
+
+      if (userMetadataError) {
+        throw userMetadataError;
       }
+
+      dispatch(setSignIn(true));
+      alert(`${userMetadata.nickname}님 환영합니다.`);
+      navigate('/');
     } catch (error) {
       console.error('로그인 중 오류 발생:', error.message);
-      alert('로그인 오류 발생');
+      alert('로그인 오류 발생! 존재하지 않는 아이디, 비밀번호입니다.');
     }
   };
 
@@ -96,6 +103,7 @@ const LoginPage = ({ signOut }) => {
     if (error) {
       console.error('깃허브 로그인 에러', error.message);
       alert('로그인 오류가 발생하였습니다, 다시 시도해주세요.');
+      return
     }
     console.log('OAuth 데이터:', data);
 
