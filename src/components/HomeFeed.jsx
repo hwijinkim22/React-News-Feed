@@ -132,22 +132,19 @@ const HomePostCommentCount = styled.div`
   font-size: 12px;
 `;
 
-
 const HomePostDate = styled.div`
   display: flex;
   justify-content: center;
-
+`;
 const HomePostSolveStatus = styled.div`
   position: absolute;
   top: 10px;
   right: 100px; /* 댓글 개수 옆에 위치하도록 조정 */
-  background-color: ${(props) =>
-    props.solved ? 'rgba(144, 238, 144, 1)' : 'rgba(255, 182, 193, 1)'};
+  background-color: ${(props) => (props.solved ? 'rgba(144, 238, 144, 1)' : 'rgba(255, 182, 193, 1)')};
   color: white;
   padding: 5px 10px;
   border-radius: 10px;
   font-size: 12px;
-
 `;
 
 const MoreButton = styled.button`
@@ -261,9 +258,7 @@ const HomeFeed = () => {
           <HomePost key={post.id} onClick={() => handleItemSelect(post.id)}>
             <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
             <HomePostCommentCount>댓글 {commentCounts[post.id] || 0} 개</HomePostCommentCount>
-            <HomePostSolveStatus solved={post.isSolved}>
-              {post.isSolved ? '해결완료' : '해결중'}
-            </HomePostSolveStatus>
+            <HomePostSolveStatus solved={post.isSolved}>{post.isSolved ? '해결완료' : '해결중'}</HomePostSolveStatus>
             <HomePostOverlay>
               <HomePostNicknameContainer>{post.nickname}</HomePostNicknameContainer>
               <HomePostUserImage src={userProfiles[post.user_id]} alt="User Avatar" />
