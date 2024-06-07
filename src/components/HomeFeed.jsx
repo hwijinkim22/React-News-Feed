@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeInput from './HomeInput';
 import Footer from './Footer';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import supabase from '../supabaseClient';
+import { fetchPosts, incrementForceRender } from '../store/slice/newsFeedSlice';
 
 const Container = styled.div`
   display: flex;
@@ -131,9 +132,22 @@ const HomePostCommentCount = styled.div`
   font-size: 12px;
 `;
 
+
 const HomePostDate = styled.div`
   display: flex;
   justify-content: center;
+
+const HomePostSolveStatus = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 100px; /* 댓글 개수 옆에 위치하도록 조정 */
+  background-color: ${(props) =>
+    props.solved ? 'rgba(144, 238, 144, 1)' : 'rgba(255, 182, 193, 1)'};
+  color: white;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+
 `;
 
 const MoreButton = styled.button`
@@ -158,12 +172,19 @@ const CloseButton = styled.button`
 
 const HomeFeed = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showAll, setShowAll] = useState(false);
   const [searchFeed, setSearchFeed] = useState('');
   const [commentCounts, setCommentCounts] = useState({});
   const [userProfiles, setUserProfiles] = useState({});
 
   const posts = useSelector((state) => state.newsFeed.posts);
+  const forceRender = useSelector((state) => state.newsFeed.forceRender);
+
+  useEffect(() => {
+    dispatch(fetchPosts());
+    dispatch(incrementForceRender());
+  }, [dispatch]);
 
   // HomeFeed 컴포넌트에서 DetailPage 컴포넌트로 item을 id로 넘기는 함수
   const handleItemSelect = (id) => {
@@ -211,7 +232,7 @@ const HomeFeed = () => {
   useEffect(() => {
     fetchCommentCounts();
     fetchUserProfiles();
-  }, [posts]);
+  }, [posts, forceRender]);
 
   const handleSearch = (feed) => {
     setSearchFeed(feed);
@@ -240,6 +261,9 @@ const HomeFeed = () => {
           <HomePost key={post.id} onClick={() => handleItemSelect(post.id)}>
             <HomePostImage dangerouslySetInnerHTML={{ __html: post.content }} />
             <HomePostCommentCount>댓글 {commentCounts[post.id] || 0} 개</HomePostCommentCount>
+            <HomePostSolveStatus solved={post.isSolved}>
+              {post.isSolved ? '해결완료' : '해결중'}
+            </HomePostSolveStatus>
             <HomePostOverlay>
               <HomePostNicknameContainer>{post.nickname}</HomePostNicknameContainer>
               <HomePostUserImage src={userProfiles[post.user_id]} alt="User Avatar" />
@@ -255,7 +279,7 @@ const HomeFeed = () => {
       ) : (
         <MoreButton onClick={() => setShowAll(true)}>더보기</MoreButton>
       )}
-      <Footer />
+      <Footer />~
     </Container>
   );
 };
