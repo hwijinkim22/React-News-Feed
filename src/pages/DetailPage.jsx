@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import supabase from '../supabaseClient';
 import CommentsSection from '../components/CommentsSection';
+import { fetchPosts } from '../store/slice/newsFeedSlice';
 
 const Wrap = styled.div`
   * {
@@ -75,7 +77,6 @@ const Wrap = styled.div`
     max-width: 100%;
     word-break: break-word; /* 긴 단어가 박스를 넘지 않도록 설정 */
     border-radius: 20px;
-
     margin-bottom: 20px;
   }
 
@@ -96,15 +97,32 @@ const Wrap = styled.div`
       margin-left: 10px;
     }
   }
+
+  .post__solve_status {
+    padding: 0 20px;
+    width: 100px;
+    height: 35px;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-right: 10px;
+    background-color: ${(props) =>
+      props.solved ? 'rgba(144, 238, 144, 0.5)' : 'rgba(255, 182, 193, 0.5)'};
+    color: white;
+  }
 `;
 
 const DetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { item } = location.state || {};
   const [currentUser, setCurrentUser] = useState(null);
   const [users, setUsers] = useState();
   const [profilePic, setProfilePic] = useState('');
+  const [lastClicked, setLastClicked] = useState(null);
+  const [isSolved, setIsSolved] = useState(item ? item.isSolved : false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -180,11 +198,38 @@ const DetailPage = () => {
       if (confirmed) {
         alert('좋습니다. 삭제해드렸습니다.');
         await supabase.from('posts').delete().eq('id', item.id);
+        dispatch(fetchPosts()); // 삭제 후 최신 데이터 가져오기
         navigate('/', { state: { refresh: true } }); // 상태를 전달하여 홈으로 이동
       }
     } else {
       alert('이런! 당신은 이 게시글 작성자가 아니잖아요!');
     }
+  };
+
+  const handleSolveStatus = async () => {
+    const now = new Date().getTime();
+
+    if (lastClicked && now - lastClicked < 5000) {
+      alert('진정하세요! 버튼을 너무 자주 누르고 있어요.');
+      return;
+    }
+
+    setLastClicked(now);
+
+    const newStatus = !isSolved;
+    const { error } = await supabase
+      .from('posts')
+      .update({ isSolved: newStatus })
+      .eq('id', item.id);
+
+    if (error) {
+      console.error('Error updating solve status:', error.message);
+      return;
+    }
+
+    setIsSolved(newStatus);
+    item.isSolved = newStatus; // 아이템 상태 업데이트
+    dispatch(fetchPosts()); // 업데이트 후 최신 데이터 가져오기
   };
 
   const formatDate = (dateString) => {
@@ -204,7 +249,7 @@ const DetailPage = () => {
   }
 
   return (
-    <Wrap>
+    <Wrap solved={isSolved}>
       <div className="detail__wrap">
         <div className="detail__post__ul">
           <div className="detail__post__list">
@@ -218,6 +263,11 @@ const DetailPage = () => {
           </div>
 
           <div className="detail__post__btns">
+            {currentUser && currentUser.id === item.user_id && (
+              <button className="post__solve_status" onClick={handleSolveStatus}>
+                {isSolved ? '해결완료' : '해결중'}
+              </button>
+            )}
             <button className="post__btn--modify" onClick={() => handleEdit(item)}>
               수정
             </button>
